@@ -101,7 +101,7 @@ export default function Home() {
 								className='absolute right-0 top-1/2 -translate-y-1/2 z-10 w-[120%] h-[120%] pointer-events-none translate-x-24 opacity-80 mix-blend-lighten'>
 								<div className='w-full h-full flex items-center justify-center relative'>
 									<img
-										src={productMain}
+										src={productMain.src}
 										alt='Man holding Velorm Cologne'
 										className='w-full h-full object-contain object-right drop-shadow-2xl'
 									/>
