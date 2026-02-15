@@ -7,83 +7,84 @@ import { RootState, AppDispatch } from '@/store/store';
 import { createOrder } from '@/store/slices/orderSlice';
 import { useRouter } from 'next/router';
 
-const DEMO_USER_ID = "6624e2faa3bd4fd5287d508e";
+const DEMO_USER_ID = '6624e2faa3bd4fd5287d508e';
 
 export default function Checkout() {
-    const dispatch = useDispatch<AppDispatch>();
-    const router = useRouter();
-    const { items } = useSelector((state: RootState) => state.cart);
-    
-    // Simple state for inputs
-    const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        email: '',
-        contact: '',
-        address: '',
-        city: '',
-        postalCode: '',
-        landmark: ''
-    });
+	const dispatch = useDispatch<AppDispatch>();
+	const router = useRouter();
+	const { items } = useSelector((state: RootState) => state.cart);
 
-    const subtotal = items.reduce(
-		(acc, item) => {
-             const price = item.cartProduct?.regularPrice || item.cartProduct?.price || 0;
-             return acc + price * item.selQty;
-        },
-		0,
-	);
+	// Simple state for inputs
+	const [formData, setFormData] = useState({
+		firstName: '',
+		lastName: '',
+		email: '',
+		contact: '',
+		address: '',
+		city: '',
+		postalCode: '',
+		landmark: '',
+	});
+
+	const subtotal = items.reduce((acc, item) => {
+		const price =
+			item.cartProduct?.regularPrice || item.cartProduct?.price || 0;
+		return acc + price * item.selQty;
+	}, 0);
 	const shipping = 5.0;
 	const total = subtotal + shipping;
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
+	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { name, value } = e.target;
+		setFormData((prev) => ({ ...prev, [name]: value }));
+	};
 
-    const handlePayment = async () => {
-        // Construct payload matching backend CreateOrderr expected structure
-        const orderData = {
-            orderPlace: "Website",
-            product: items.map(item => ({
-                id: item.cartProduct._id,
-                selQty: item.selQty
-            })),
-            user: {
-                _id: DEMO_USER_ID,
-                name: `${formData.firstName} ${formData.lastName}`,
-                email: formData.email,
-                contact: formData.contact || "9999999999" // Fallback
-            },
-            shippingaddress: {
-                location: formData.city,
-                street: formData.address,
-                address: `${formData.address}, ${formData.city}, ${formData.postalCode}`,
-                landmark: formData.landmark || formData.city,
-                locationObj: {
-                    type: "Point",
-                    coordinates: [0, 0] // Mock coordinates
-                }
-            },
-            status: "ORDERED",
-            amount: total,
-            deliverySchedule: "Standard",
-            deliveryDate: new Date().toISOString(),
-            paymentOption: "COD", // Defaulting to COD for simplicity in demo
-            walletDeductedAmount: 0,
-            deliveryType: "Standard",
-            type: "web" // Triggers createOrderOnGateWayForWeb or simple response
-        };
+	const handlePayment = async () => {
+		// Construct payload matching backend CreateOrderr expected structure
+		const orderData = {
+			orderPlace: 'Website',
+			product: items.map((item) => ({
+				id: item.cartProduct._id,
+				selQty: item.selQty,
+			})),
+			user: {
+				_id: DEMO_USER_ID,
+				name: `${formData.firstName} ${formData.lastName}`,
+				email: formData.email,
+				contact: formData.contact || '9999999999', // Fallback
+			},
+			shippingaddress: {
+				location: formData.city,
+				street: formData.address,
+				address: `${formData.address}, ${formData.city}, ${formData.postalCode}`,
+				landmark: formData.landmark || formData.city,
+				locationObj: {
+					type: 'Point',
+					coordinates: [0, 0], // Mock coordinates
+				},
+			},
+			status: 'ORDERED',
+			amount: total,
+			deliverySchedule: 'Standard',
+			deliveryDate: new Date().toISOString(),
+			paymentOption: 'COD', // Defaulting to COD for simplicity in demo
+			walletDeductedAmount: 0,
+			deliveryType: 'Standard',
+			type: 'web', // Triggers createOrderOnGateWayForWeb or simple response
+		};
 
-        const result = await dispatch(createOrder(orderData));
-        if (createOrder.fulfilled.match(result)) {
-            alert('Order Placed Successfully!');
-            router.push('/');
-        } else {
-            console.error("Order failed:", result);
-            alert('Failed to place order: ' + (result.payload as any)?.message || 'Unknown error');
-        }
-    };
+		const result = await dispatch(createOrder(orderData));
+		if (createOrder.fulfilled.match(result)) {
+			alert('Order Placed Successfully!');
+			router.push('/');
+		} else {
+			console.error('Order failed:', result);
+			alert(
+				'Failed to place order: ' + (result.payload as any)?.message ||
+					'Unknown error',
+			);
+		}
+	};
 
 	return (
 		<div className='min-h-screen bg-background text-foreground pt-32 pb-24'>
@@ -107,45 +108,45 @@ export default function Checkout() {
 							</h2>
 							<div className='grid grid-cols-2 gap-4'>
 								<input
-                                    name="firstName"
+									name='firstName'
 									placeholder='First Name'
-                                    onChange={handleInputChange}
+									onChange={handleInputChange}
 									className='bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-primary focus:outline-none text-white'
 								/>
 								<input
-                                    name="lastName"
+									name='lastName'
 									placeholder='Last Name'
-                                    onChange={handleInputChange}
+									onChange={handleInputChange}
 									className='bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-primary focus:outline-none text-white'
 								/>
 								<input
-                                    name="email"
+									name='email'
 									placeholder='Email Address'
-                                    onChange={handleInputChange}
+									onChange={handleInputChange}
 									className='col-span-2 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-primary focus:outline-none text-white'
 								/>
-                                <input
-                                    name="contact"
+								<input
+									name='contact'
 									placeholder='Phone Number'
-                                    onChange={handleInputChange}
+									onChange={handleInputChange}
 									className='col-span-2 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-primary focus:outline-none text-white'
 								/>
 								<input
-                                    name="address"
+									name='address'
 									placeholder='Address'
-                                    onChange={handleInputChange}
+									onChange={handleInputChange}
 									className='col-span-2 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-primary focus:outline-none text-white'
 								/>
 								<input
-                                    name="city"
+									name='city'
 									placeholder='City'
-                                    onChange={handleInputChange}
+									onChange={handleInputChange}
 									className='bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-primary focus:outline-none text-white'
 								/>
 								<input
-                                    name="postalCode"
+									name='postalCode'
 									placeholder='Postal Code'
-                                    onChange={handleInputChange}
+									onChange={handleInputChange}
 									className='bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-primary focus:outline-none text-white'
 								/>
 							</div>
@@ -163,7 +164,7 @@ export default function Checkout() {
 									<p className='text-white font-medium'>Standard Delivery</p>
 									<p className='text-xs text-gray-400'>3-5 Business Days</p>
 								</div>
-								<p className='text-white font-bold'>$5.00</p>
+								<p className='text-white font-bold'>₹200.00</p>
 							</div>
 						</div>
 					</div>
@@ -180,7 +181,9 @@ export default function Checkout() {
 							<div className='space-y-4 mb-8'>
 								<div className='p-4 rounded-xl border border-white/10 bg-white/5 flex items-center gap-4'>
 									<CreditCard className='w-5 h-5 text-primary' />
-									<span className='text-sm text-white'>Cash On Delivery (Default)</span>
+									<span className='text-sm text-white'>
+										Cash On Delivery (Default)
+									</span>
 								</div>
 							</div>
 
@@ -193,7 +196,9 @@ export default function Checkout() {
 								</div>
 							</div>
 
-							<button onClick={handlePayment} className='w-full py-4 bg-primary text-black font-bold rounded-full hover:scale-105 transition-transform flex items-center justify-center gap-3'>
+							<button
+								onClick={handlePayment}
+								className='w-full py-4 bg-primary text-black font-bold rounded-full hover:scale-105 transition-transform flex items-center justify-center gap-3'>
 								<Lock className='w-4 h-4' /> Place Order
 							</button>
 

@@ -38,7 +38,7 @@ const getCategoryName = (categoryId: string, categories: Category[]) => {
 	return cat ? cat.categoryName : 'Collection';
 };
 
-export default function Shop({ products = [], categories = [] }: ShopProps) {
+export default function Shop({ products = [], categories = [] }: any) {
 	const dispatch = useDispatch<AppDispatch>();
 	const [searchTerm, setSearchTerm] = useState('');
 
@@ -77,7 +77,7 @@ export default function Shop({ products = [], categories = [] }: ShopProps) {
 	};
 
 	// Filter products
-	const filteredProducts = products.filter((p) =>
+	const filteredProducts = products.filter((p: any) =>
 		p.name.toLowerCase().includes(searchTerm.toLowerCase()),
 	);
 
@@ -114,55 +114,60 @@ export default function Shop({ products = [], categories = [] }: ShopProps) {
 					</div>
 
 					<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8'>
-						{filteredProducts.map((product, i) => (
-							<motion.div
-								key={product._id}
-								initial={{ opacity: 0, y: 20 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{ delay: i * 0.1 }}
-								className='group'>
-								<Link href={`/product-details/${product.slug || product._id}`}>
-									<div className='cursor-pointer'>
-										<div className='relative aspect-[4/5] rounded-3xl overflow-hidden bg-white/5 border border-white/5 mb-6'>
-											<img
-												src={'/images/placeholder.png'}
-												alt={product.name}
-												className='w-full h-full object-cover transition-transform duration-700 group-hover:scale-110'
-												onError={(e) => {
-													(e.target as HTMLImageElement).src =
-														'https://via.placeholder.com/400x500?text=No+Image';
-												}}
-											/>
-											<button className='absolute top-4 right-4 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity'>
-												<Heart className='w-5 h-5' />
-											</button>
-											<div className='absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all'>
-												<button
-													onClick={(e) => handleAddToCart(e, product)}
-													className='w-full py-3 bg-primary text-black font-bold rounded-xl shadow-xl'>
-													Add to Cart
+						{filteredProducts.map((product: any, i: any) => {
+							console.log(product);
+							return (
+								<motion.div
+									key={product._id}
+									initial={{ opacity: 0, y: 20 }}
+									animate={{ opacity: 1, y: 0 }}
+									transition={{ delay: i * 0.1 }}
+									className='group'>
+									<Link href={`/product-details/${product.slug}`}>
+										<div className='cursor-pointer'>
+											<div className='relative aspect-[4/5] rounded-3xl overflow-hidden bg-white/5 border border-white/5 mb-6'>
+												<img
+													src={`https://api.velorm.com/resources/${product.productImage[0].filename}`}
+													alt={product.name}
+													className='w-full h-full object-cover transition-transform duration-700 group-hover:scale-110'
+													onError={(e) => {
+														(e.target as HTMLImageElement).src =
+															'https://via.placeholder.com/400x500?text=No+Image';
+													}}
+												/>
+												<button className='absolute top-4 right-4 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity'>
+													<Heart className='w-5 h-5' />
 												</button>
+												<div className='absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all'>
+													<button
+														onClick={(e) => handleAddToCart(e, product)}
+														className='w-full py-3 bg-primary text-black font-bold rounded-xl shadow-xl'>
+														Add to Cart
+													</button>
+												</div>
 											</div>
-										</div>
-										<div className='flex justify-between items-start'>
-											<div>
-												<p className='text-primary text-xs uppercase tracking-widest mb-1 font-bold'>
-													{getCategoryName(product.categoryId, categories)}
+											<div className='flex justify-between items-start'>
+												<div>
+													<p className='text-primary text-xs uppercase tracking-widest mb-1 font-bold'>
+														{getCategoryName(product.categoryId, categories)}
+													</p>
+													<h3 className='text-lg font-serif text-white group-hover:text-primary transition-colors'>
+														{product.name}
+													</h3>
+												</div>
+												<p className='text-white font-medium'>
+													₹{product.price}
 												</p>
-												<h3 className='text-lg font-serif text-white group-hover:text-primary transition-colors'>
-													{product.name}
-												</h3>
 											</div>
-											<p className='text-white font-medium'>₹{product.price}</p>
+											<div className='flex items-center gap-1 mt-2'>
+												<Star className='w-3 h-3 fill-primary text-primary' />
+												<span className='text-xs text-gray-500'>4.5</span>
+											</div>
 										</div>
-										<div className='flex items-center gap-1 mt-2'>
-											<Star className='w-3 h-3 fill-primary text-primary' />
-											<span className='text-xs text-gray-500'>4.5</span>
-										</div>
-									</div>
-								</Link>
-							</motion.div>
-						))}
+									</Link>
+								</motion.div>
+							);
+						})}
 						{filteredProducts.length === 0 && (
 							<p className='text-white col-span-3 text-center'>
 								No products found.

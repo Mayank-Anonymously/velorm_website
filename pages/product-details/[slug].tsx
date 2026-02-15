@@ -16,68 +16,60 @@ import { addToCart } from '@/store/slices/cartSlice';
 import { AppDispatch } from '@/store/store';
 import { useRouter } from 'next/router';
 
-interface Product {
-	_id: string;
-	name: string;
-	slug: string;
-	categoryId: string;
-	productType: string;
-	price: number;
-    regularPrice: number;
-	description: string;
-    productImage: string[];
-}
-
-interface Props {
-	product: Product;
-    error?: string;
-}
-
 // Hardcoded user ID for demo purposes
-const DEMO_USER_ID = "6624e2faa3bd4fd5287d508e";
+const DEMO_USER_ID = '6624e2faa3bd4fd5287d508e';
 
-export default function ProductDetails({ product, error }: Props) {
-    const dispatch = useDispatch<AppDispatch>();
-    const router = useRouter();
+export default function ProductDetails({ product, error }: any) {
+	const dispatch = useDispatch<AppDispatch>();
+	const router = useRouter();
 
-    if (router.isFallback) {
-        return <div>Loading...</div>;
-    }
+	if (router.isFallback) {
+		return <div>Loading...</div>;
+	}
 
-    if (error || !product) {
-        return (
-            <div className="min-h-screen flex flex-col items-center justify-center bg-background text-white">
-                <h1 className="text-4xl font-serif mb-4">Product Not Found</h1>
-                <Link href="/shop" className="text-primary hover:underline">Return to Shop</Link>
-            </div>
-        );
-    }
+	if (error || !product) {
+		return (
+			<div className='min-h-screen flex flex-col items-center justify-center bg-background text-white'>
+				<h1 className='text-4xl font-serif mb-4'>Product Not Found</h1>
+				<Link
+					href='/shop'
+					className='text-primary hover:underline'>
+					Return to Shop
+				</Link>
+			</div>
+		);
+	}
 
-    const handleAddToCart = () => {
-        const productData = {
-           productwithdates: {
-               subscribed_type: "One Time",
-               start_date: new Date(),
-               membership_offer: false,
-               regularPrice: product.regularPrice || product.price,
-               subscription_dates: "",
-               name: product.name,
-               image: product.productImage && product.productImage.length > 0 ? product.productImage[0] : '', 
-           },
-           price: product.price,
-           name: product.name
-        };
+	const handleAddToCart = () => {
+		const productData = {
+			productwithdates: {
+				subscribed_type: 'One Time',
+				start_date: new Date(),
+				membership_offer: false,
+				regularPrice: product.regularPrice || product.price,
+				subscription_dates: '',
+				name: product.name,
+				image:
+					product.productImage && product.productImage.length > 0 ?
+						product.productImage[0]
+					:	'',
+			},
+			price: product.price,
+			name: product.name,
+		};
 
-        dispatch(addToCart({ 
-            productId: product._id, 
-            userId: DEMO_USER_ID, 
-            productData 
-        }));
-        router.push('/cart');
-    };
-
+		dispatch(
+			addToCart({
+				productId: product._id,
+				userId: DEMO_USER_ID,
+				productData,
+			}),
+		);
+		router.push('/cart');
+	};
 	return (
-		<> <Header />
+		<>
+			{' '}
 			<div className='min-h-screen bg-background text-foreground pt-32 pb-24'>
 				<div className='container mx-auto px-6'>
 					<Link
@@ -94,14 +86,13 @@ export default function ProductDetails({ product, error }: Props) {
 							className='space-y-4'>
 							<div className='aspect-[4/5] rounded-[2rem] overflow-hidden bg-white/5 border border-white/5'>
 								<img
-									src={product.productImage && product.productImage.length > 0 
-                                        ? (product.productImage[0].startsWith('http') ? product.productImage[0] : `https://api.velorm.com/images/${product.productImage[0]}`) 
-                                        : '/images/placeholder.png'}
+									src={`https://api.velorm.com/resources/${product.productImage[0].filename}`}
 									className='w-full h-full object-cover'
 									alt={product.name}
-                                    onError={(e) => {
-                                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x500?text=No+Image';
-                                    }}
+									onError={(e) => {
+										(e.target as HTMLImageElement).src =
+											'https://via.placeholder.com/400x500?text=No+Image';
+									}}
 								/>
 							</div>
 						</motion.div>
@@ -145,9 +136,9 @@ export default function ProductDetails({ product, error }: Props) {
 
 							<div className='flex items-center gap-6 mb-10'>
 								<div className='flex-1'>
-									<button 
-                                        onClick={handleAddToCart}
-                                        className='w-full py-4 bg-primary text-black font-bold rounded-full hover:scale-105 transition-transform flex items-center justify-center gap-3'>
+									<button
+										onClick={handleAddToCart}
+										className='w-full py-4 bg-primary text-black font-bold rounded-full hover:scale-105 transition-transform flex items-center justify-center gap-3'>
 										<ShoppingBag className='w-5 h-5' /> Add to Cart
 									</button>
 								</div>
@@ -187,30 +178,32 @@ export default function ProductDetails({ product, error }: Props) {
 }
 
 export async function getServerSideProps(context: any) {
-    const { slug } = context.params;
+	const { slug } = context.params;
 
-    try {
-        const res = await fetch(`https://api.velorm.com/api/v1/product/get-product-by-slug/${slug}`);
-        
-        if (!res.ok) {
-            return { props: { error: 'Product not found' } }; // Or notFound: true
-        }
+	try {
+		const res = await fetch(
+			`https://api.velorm.com/api/v1/product/get-product-by-slug/${slug}`,
+		);
 
-        const data = await res.json();
-        
-        if (!data.response) {
-             return { notFound: true };
-        }
+		if (!res.ok) {
+			return { props: { error: 'Product not found' } }; // Or notFound: true
+		}
 
-        return {
-            props: {
-                product: data.response,
-            },
-        };
-    } catch (error) {
-        console.error("Error fetching product:", error);
-        return {
-             props: { error: 'Failed to load product' }
-        };
-    }
+		const data = await res.json();
+
+		if (!data.response) {
+			return { notFound: true };
+		}
+
+		return {
+			props: {
+				product: data.response,
+			},
+		};
+	} catch (error) {
+		console.error('Error fetching product:', error);
+		return {
+			props: { error: 'Failed to load product' },
+		};
+	}
 }

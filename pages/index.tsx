@@ -138,16 +138,19 @@ export default function Home() {
 									title: 'Woody & Traditional Attar',
 									desc: 'Rich, Deep and Long Lasting frangnances ',
 									img: categoriesImg,
+									link: '/shop',
 								},
 								{
 									title: 'Sweet & Gourmand',
 									desc: 'Warm,sweet and delicious fragnances',
 									img: productSmall,
+									link: '/shop',
 								},
 								{
 									title: 'Floral & Romantic',
 									desc: 'Soft, Elegant and feminine fragnances',
 									img: productMain,
+									link: '/shop',
 								},
 							].map((cat, i) => (
 								<motion.div
@@ -310,9 +313,9 @@ export default function Home() {
 										alt='IG Post'
 										className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-500'
 									/>
-									<div className='absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center'>
+									{/* <div className='absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center'>
 										<Instagram className='text-white w-6 h-6' />
-									</div>
+									</div> */}
 								</div>
 							))}
 						</div>

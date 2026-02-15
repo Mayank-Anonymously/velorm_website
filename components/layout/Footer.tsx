@@ -52,7 +52,7 @@ export default function Footer() {
 							<ul className='space-y-4 text-gray-400'>
 								<li>
 									<a
-										href='#'
+										href='/shop'
 										className='hover:text-primary transition-colors'>
 										Shop All
 									</a>
