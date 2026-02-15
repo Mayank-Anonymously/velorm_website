@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import {
-	ShoppingBag,
+	
 	Trash2,
 	ArrowRight,
 	CreditCard,
@@ -18,7 +18,7 @@ import {
 } from '@/store/slices/cartSlice';
 import Link from 'next/link';
 
-// Hardcoded user ID for demo purposes
+
 const DEMO_USER_ID = '6624e2faa3bd4fd5287d508e'; // Example ID from router.js comments
 
 export default function Cart() {
