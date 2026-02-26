@@ -1,175 +1,188 @@
-import Footer from '@/components/layout/Footer';
-import Header from '@/components/layout/Header';
 import { motion } from 'framer-motion';
-import {
-	Star,
-	ShoppingBag,
-	Heart,
-	ArrowLeft,
-	Truck,
-	ShieldCheck,
-	RefreshCw,
-} from 'lucide-react';
+import { ShoppingBag, Star, ArrowLeft, Truck, ShieldCheck, RefreshCcw } from 'lucide-react';
 import Link from 'next/link';
-import { useDispatch } from 'react-redux';
-import { addToCart } from '@/store/slices/cartSlice';
-import { AppDispatch } from '@/store/store';
 import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '@/store/store';
+import { addToCart } from '@/store/slices/cartSlice';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
+import { getEffectiveUserId } from '@/lib/auth';
 
-// Hardcoded user ID for demo purposes
-const DEMO_USER_ID = '6624e2faa3bd4fd5287d508e';
-
-export default function ProductDetails({ product, error }: any) {
-	const dispatch = useDispatch<AppDispatch>();
+export default function ProductDetails() {
 	const router = useRouter();
+	const { slug } = router.query;
+	const dispatch = useDispatch<AppDispatch>();
+	const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+	const [product, setProduct] = useState<any>(null);
+	const [loading, setLoading] = useState(true);
+	const [activeImage, setActiveImage] = useState(0);
 
-	if (router.isFallback) {
-		return <div>Loading...</div>;
-	}
-
-	if (error || !product) {
-		return (
-			<div className='min-h-screen flex flex-col items-center justify-center bg-background text-white'>
-				<h1 className='text-4xl font-serif mb-4'>Product Not Found</h1>
-				<Link
-					href='/shop'
-					className='text-primary hover:underline'>
-					Return to Shop
-				</Link>
-			</div>
-		);
-	}
+	useEffect(() => {
+		if (slug) {
+			const fetchProduct = async () => {
+				try {
+					const res = await fetch(`https://api.velorm.com/api/v1/product/get-product-by-slug/${slug}`);
+					const data = await res.json();
+					setProduct(data.response);
+				} catch (error) {
+					console.error('Error fetching product:', error);
+				} finally {
+					setLoading(false);
+				}
+			};
+			fetchProduct();
+		}
+	}, [slug]);
 
 	const handleAddToCart = () => {
-		const productData = {
-			productwithdates: {
-				subscribed_type: 'One Time',
-				start_date: new Date(),
-				membership_offer: false,
-				regularPrice: product.regularPrice || product.price,
-				subscription_dates: '',
-				name: product.name,
-				image:
-					product.productImage && product.productImage.length > 0 ?
-						product.productImage[0]
-					:	'',
-			},
-			price: product.price,
-			name: product.name,
-		};
-
+		if (!product) return;
+		const userId = getEffectiveUserId(user);
 		dispatch(
 			addToCart({
 				productId: product._id,
-				userId: DEMO_USER_ID,
-				productData,
+				userId,
+				productData: {
+					cartProduct: product,
+					selQty: 1,
+				},
 			}),
 		);
-		router.push('/cart');
+		alert('Added to bag!');
 	};
+
+	if (loading) return <div className="min-h-screen bg-background flex items-center justify-center pt-20">
+		<div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+	</div>;
+	
+	if (!product) return <div className="min-h-screen bg-background flex items-center justify-center pt-20">
+		<p className="text-white text-xl">Product not found</p>
+	</div>;
+
 	return (
 		<>
-			{' '}
+			<Header />
 			<div className='min-h-screen bg-background text-foreground pt-32 pb-24'>
-				<div className='container mx-auto px-6'>
+				<div className='container mx-auto px-4 sm:px-6'>
 					<Link
 						href='/shop'
-						className='inline-flex items-center gap-2 text-gray-400 hover:text-white mb-12 transition-colors'>
-						<ArrowLeft className='w-4 h-4' /> Back to Shop
+						className='inline-flex items-center gap-2 text-gray-400 hover:text-white mb-12 transition-colors group'>
+						<ArrowLeft className='w-4 h-4 group-hover:-translate-x-1 transition-transform' />
+						Back to Collection
 					</Link>
 
-					<div className='grid grid-cols-1 lg:grid-cols-2 gap-16 items-start'>
-						{/* LEFT SIDE IMAGE */}
-						<motion.div
-							initial={{ opacity: 0, x: -50 }}
-							animate={{ opacity: 1, x: 0 }}
-							className='space-y-4'>
-							<div className='aspect-[4/5] rounded-[2rem] overflow-hidden bg-white/5 border border-white/5'>
-								<img
-									src={`https://api.velorm.com/resources/${product.productImage[0].filename}`}
-									className='w-full h-full object-cover'
-									alt={product.name}
-									onError={(e) => {
-										(e.target as HTMLImageElement).src =
-											'https://via.placeholder.com/400x500?text=No+Image';
-									}}
-								/>
-							</div>
-						</motion.div>
+					<div className='grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24'>
+						{/* Product Images */}
+						<div className='space-y-6'>
+							{(() => {
+								const allImages = [product.productImage[0].filename, ...(product.productImage[0].filename || [])].filter(Boolean);
+								const displayImg = allImages[activeImage] || product.image || '';
+								return (
+									<>
+										<motion.div
+											key={displayImg}
+											initial={{ opacity: 0, scale: 0.98 }}
+											animate={{ opacity: 1, scale: 1 }}
+											transition={{ duration: 0.3 }}
+											className='aspect-square rounded-[3rem] overflow-hidden bg-white/5 border border-white/5'>
+											<img
+												src={`https://api.velorm.com/resources/${product.productImage[0].filename}`}
+												alt={product.name}
+												className='w-full h-full object-cover'
+											/>
+										</motion.div>
+										{/* <div className='grid grid-cols-4 gap-4'>
+											{allImages.map((img, i) => (
+												<button
+													key={i}
+													onClick={() => setActiveImage(i)}
+													className={`aspect-square rounded-2xl overflow-hidden border-2 transition-all ${
+														activeImage === i ? 'border-primary' : 'border-transparent opacity-50'
+													}`}>
+													<img
+																										src={`https://api.velorm.com/resources/${img}`}
 
-						{/* RIGHT SIDE DETAILS */}
-						<motion.div
-							initial={{ opacity: 0, x: 50 }}
-							animate={{ opacity: 1, x: 0 }}>
-							<div className='flex items-center gap-2 mb-4'>
-								<div className='flex gap-1'>
-									{[...Array(5)].map((_, i) => (
-										<Star
-											key={i}
-											className='w-4 h-4 fill-primary text-primary'
-										/>
-									))}
+														alt={`${product.name} view ${i + 1}`}
+														className='w-full h-full object-cover'
+													/>
+												</button>
+											))}
+										</div> */}
+									</>
+								);
+							})()}
+						</div>
+
+						{/* Product Info */}
+						<div className='flex flex-col justify-center'>
+							<div className='mb-8'>
+								<p className='text-xs font-bold tracking-widest text-primary uppercase mb-4'>
+									{product.category?.name || product.category}
+								</p>
+								<h1 className='text-3xl sm:text-4xl md:text-5xl font-serif text-white mb-4'>
+									{product.name}
+								</h1>
+								<div className='flex items-center gap-4 mb-6'>
+									<div className='flex items-center gap-1'>
+										{[1, 2, 3, 4, 5].map((s) => (
+											<Star
+												key={s}
+												className='w-4 h-4 fill-primary text-primary'
+											/>
+										))}
+									</div>
+									<span className='text-sm text-gray-500'>(24 Reviews)</span>
 								</div>
-								<span className='text-sm text-gray-500'>
-									(128 Customer Reviews)
-								</span>
+								<p className='text-2xl md:text-3xl font-medium text-primary mb-8'>
+									₹{product.price}
+								</p>
+								<p className='text-gray-400 leading-relaxed mb-10'>
+									{product.description ||
+										'Immerse yourself in the world of luxury with this exquisite fragrance. Crafted with the finest ingredients to ensure a long-lasting and captivating scent experience.'}
+								</p>
 							</div>
 
-							<h1 className='text-5xl font-serif text-white mb-4'>
-								{product.name}
-							</h1>
-
-							<p className='text-3xl font-medium text-primary mb-4'>
-								₹{product.price}
-							</p>
-
-							<p className='text-sm text-gray-400 mb-6'>
-								{/** We don't have category name here easily unless we fetch it or pass it. 
-                                     Backend response has categoryId. 
-                                     For now, just show type if available or hardcode 'Collection' */}
-								Collection • {product.productType || 'Attar'}
-							</p>
-
-							<p className='text-gray-400 text-lg leading-relaxed mb-10'>
-								{product.description}
-							</p>
-
-							<div className='flex items-center gap-6 mb-10'>
-								<div className='flex-1'>
-									<button
-										onClick={handleAddToCart}
-										className='w-full py-4 bg-primary text-black font-bold rounded-full hover:scale-105 transition-transform flex items-center justify-center gap-3'>
-										<ShoppingBag className='w-5 h-5' /> Add to Cart
-									</button>
-								</div>
-								<button className='w-14 h-14 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-white/5 transition-colors'>
-									<Heart className='w-6 h-6' />
+							<div className='space-y-6 mb-12'>
+								<button
+									onClick={handleAddToCart}
+									className='w-full py-5 bg-primary text-black font-bold rounded-full hover:scale-105 transition-transform flex items-center justify-center gap-3 shadow-lg shadow-primary/20'>
+									<ShoppingBag className='w-5 h-5' /> Add to Bag
 								</button>
 							</div>
 
-							{/* FEATURES */}
-							<div className='grid grid-cols-1 sm:grid-cols-3 gap-6 pt-10 border-t border-white/10'>
-								<div className='flex flex-col items-center text-center'>
-									<Truck className='w-6 h-6 text-primary mb-3' />
-									<p className='text-xs text-white uppercase font-bold'>
+							{/* Features Grid */}
+							<div className='grid grid-cols-3 gap-4 pt-10 border-t border-white/10'>
+								<div className='flex flex-col items-center text-center gap-3'>
+									<div className='w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-primary'>
+										<Truck className='w-5 h-5' />
+									</div>
+									<span className='text-[10px] uppercase font-bold tracking-widest text-gray-400'>
 										Free Shipping
-									</p>
+									</span>
 								</div>
-								<div className='flex flex-col items-center text-center'>
-									<ShieldCheck className='w-6 h-6 text-primary mb-3' />
-									<p className='text-xs text-white uppercase font-bold'>
-										Premium Quality
-									</p>
+								<div className='flex flex-col items-center text-center gap-3'>
+									<div className='w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-primary'>
+										<ShieldCheck className='w-5 h-5' />
+									</div>
+									<span className='text-[10px] uppercase font-bold tracking-widest text-gray-400'>
+										Authentic
+									</span>
 								</div>
-								<div className='flex flex-col items-center text-center'>
-									<RefreshCw className='w-6 h-6 text-primary mb-3' />
-									<p className='text-xs text-white uppercase font-bold'>
+								<div className='flex flex-col items-center text-center gap-3'>
+									<div className='w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-primary'>
+										<RefreshCcw className='w-5 h-5' />
+									</div>
+									<span className='text-[10px] uppercase font-bold tracking-widest text-gray-400'>
 										Easy Returns
-									</p>
+									</span>
 								</div>
 							</div>
-						</motion.div>
+						</div>
 					</div>
+
+					{/* Customer Reviews Section */}
+					<ReviewsSection productId={product._id} userId={user?._id} isAuthenticated={isAuthenticated} />
 				</div>
 			</div>
 			<Footer />
@@ -177,33 +190,151 @@ export default function ProductDetails({ product, error }: any) {
 	);
 }
 
-export async function getServerSideProps(context: any) {
-	const { slug } = context.params;
+function ReviewsSection({ productId, userId, isAuthenticated }: { productId: string, userId?: string, isAuthenticated: boolean }) {
+    const [reviews, setReviews] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [rating, setRating] = useState(5);
+    const [comment, setComment] = useState('');
+    const [submitting, setSubmitting] = useState(false);
 
-	try {
-		const res = await fetch(
-			`https://api.velorm.com/api/v1/product/get-product-by-slug/${slug}`,
-		);
 
-		if (!res.ok) {
-			return { props: { error: 'Product not found' } }; // Or notFound: true
-		}
 
-		const data = await res.json();
+    const handleSubmitReview = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!isAuthenticated) {
+            alert('Please login to leave a review');
+            return;
+        }
+        if (!comment.trim()) return;
 
-		if (!data.response) {
-			return { notFound: true };
-		}
+        setSubmitting(true);
+        try {
+            const res = await fetch(`https://api.velorm.com/api/v1/rating/add-rating/${productId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: userId,
+                    rating,
+                    description: comment,
+                    saveInfo: true
+                })
+            });
+            const data = await res.json();
+            if (data.baseResponse?.status === 1) {
+                setComment('');
+                setRating(5);
+                alert('Review submitted successfully!');
+            }
+        } catch (error) {
+            console.error('Error submitting review:', error);
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
-		return {
-			props: {
-				product: data.response,
-			},
-		};
-	} catch (error) {
-		console.error('Error fetching product:', error);
-		return {
-			props: { error: 'Failed to load product' },
-		};
-	}
+    return (
+        <div className="mt-32 pt-20 border-t border-white/5">
+            <div className="flex flex-col lg:flex-row gap-20">
+                {/* Reviews List */}
+                <div className="lg:w-2/3">
+                    <h2 className="text-3xl font-serif text-white mb-12">Customer Reviews</h2>
+                    
+                    {loading ? (
+                        <div className="space-y-8">
+                            {[1, 2].map(i => (
+                                <div key={i} className="h-40 bg-white/5 rounded-3xl animate-pulse" />
+                            ))}
+                        </div>
+                    ) : reviews.length === 0 ? (
+                        <div className="p-12 text-center bg-white/5 rounded-[2rem] border border-white/5">
+                            <p className="text-gray-500">No reviews yet. Be the first to share your experience!</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-8">
+                            {reviews.map((rev, i) => (
+                                <motion.div 
+                                    key={rev._id || i}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    className="p-8 rounded-[2rem] bg-white/5 border border-white/5 hover:border-white/10 transition-colors"
+                                >
+                                    <div className="flex justify-between items-start mb-6">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+                                                {rev.user?.name?.charAt(0) || 'U'}
+                                            </div>
+                                            <div>
+                                                <p className="text-white font-medium">{rev.user?.name || 'Anonymous User'}</p>
+                                                <p className="text-xs text-gray-500">{new Date(rev.createdAt).toLocaleDateString()}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-0.5">
+                                            {[...Array(5)].map((_, idx) => (
+                                                <Star key={idx} className={`w-3.5 h-3.5 ${idx < rev.rating ? 'fill-primary text-primary' : 'text-gray-700'}`} />
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <p className="text-gray-300 leading-relaxed italic">&ldquo;{rev.description}&rdquo;</p>
+                                </motion.div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Write a Review Form */}
+                <div className="lg:w-1/3">
+                    <div className="p-10 rounded-[2.5rem] bg-white/5 border border-white/5 sticky top-32">
+                        <h3 className="text-2xl font-serif text-white mb-8">Write a Review</h3>
+                        
+                        {isAuthenticated ? (
+                            <form onSubmit={handleSubmitReview} className="space-y-6">
+                                <div>
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-4 block">Rating</label>
+                                    <div className="flex gap-2">
+                                        {[1, 2, 3, 4, 5].map((s) => (
+                                            <button
+                                                key={s}
+                                                type="button"
+                                                onClick={() => setRating(s)}
+                                                className="hover:scale-110 transition-transform"
+                                            >
+                                                <Star className={`w-8 h-8 ${s <= rating ? 'fill-primary text-primary' : 'text-gray-700'}`} />
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-4 block">Your Experience</label>
+                                    <textarea
+                                        value={comment}
+                                        onChange={(e) => setComment(e.target.value)}
+                                        placeholder="Tell us what you think of this scent..."
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-sm text-white focus:outline-none focus:border-primary transition-colors min-h-[150px] resize-none"
+                                        required
+                                    />
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={submitting}
+                                    className="w-full py-4 bg-primary text-black font-bold rounded-full hover:scale-105 transition-transform flex items-center justify-center gap-2"
+                                >
+                                    {submitting ? 'Sending...' : 'Post Review'}
+                                </button>
+                            </form>
+                        ) : (
+                            <div className="text-center py-6">
+                                <p className="text-gray-400 mb-6">Please log in to share your review with the community.</p>
+                                <Link href="/login" className="inline-block px-8 py-3 bg-white/10 text-white rounded-full text-sm font-medium hover:bg-white/20 transition-colors">
+                                    Login to Review
+                                </Link>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 }

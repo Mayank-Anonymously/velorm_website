@@ -19,8 +19,10 @@ import categoriesImg from '@/assets/categories.png';
 import recommendedImg from '@/assets/recommended.png';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { useRouter } from 'next/router';
 
 export default function Home() {
+	const router  = useRouter()
 	return (
 		<>
 			<Header />
@@ -86,7 +88,7 @@ export default function Home() {
 										confidence, and community in every moment.
 									</p>
 									<button className='flex items-center gap-4 px-8 py-3 rounded-full border border-white/20 text-white hover:bg-[#9CAFA3] hover:border-[#9CAFA3] hover:text-black transition-all group'>
-										<span>View Our Collections</span>
+										<Link href="/shop"><span>View Our Collections</span></Link>
 										<span className='w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-black/10'>
 											<ArrowRight className='w-4 h-4' />
 										</span>
