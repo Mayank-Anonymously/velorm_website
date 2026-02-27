@@ -11,7 +11,7 @@ import {
 	MapPin,
 	Phone,
 } from 'lucide-react';
-import { Link } from 'wouter';
+
 import heroBg from '@/assets/hero-bg.png';
 import productSmall from '@/assets/product-small.png';
 import productMain from '@/assets/product-main.png';
@@ -20,6 +20,7 @@ import recommendedImg from '@/assets/recommended.png';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 export default function Home() {
 	const router  = useRouter()
