@@ -28,7 +28,7 @@ export default function Home() {
 		fetch('https://api.velorm.com/api/v1/product/get-all-products')
 			.then((r) => r.json())
 			.then((d) => {
-				const products = (d.response || []).slice(0, 6);
+				const products = (d.response || []).slice(0, 5);
 				setFeaturedProducts(products);
 			})
 			.catch(console.error);
@@ -107,9 +107,11 @@ export default function Home() {
 											confidence,
 										</p>
 										<div className='flex items-center gap-4'>
-											<button className='px-6 py-2 rounded-full border border-white/20 text-sm hover:bg-white hover:text-black transition-all'>
-												Buy Now
-											</button>
+											<Link href='/checkout' className='contents'>
+												<button className='px-6 py-2 rounded-full border border-white/20 text-sm hover:bg-white hover:text-black transition-all'>
+													Buy Now
+												</button>
+											</Link>
 											<button className='w-10 h-10 flex items-center justify-center rounded-full bg-[#9CAFA3] text-black hover:scale-105 transition-transform'>
 												<ShoppingBag className='w-4 h-4' />
 											</button>

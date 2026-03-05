@@ -53,7 +53,7 @@ export default function Contact() {
                   <div>
                     <h3 className="text-white font-medium mb-1">Call Us</h3>
                     <p className="text-gray-400 text-sm mb-2">Mon-Fri from 9am to 6pm.</p>
-                    <a href="tel:+1234567890" className="text-primary hover:underline">+1 (234) 567-890</a>
+                    <a href="tel:+918920939064" className="text-primary hover:underline">+91 8920939064</a>
                   </div>
                 </div>
 
@@ -64,7 +64,7 @@ export default function Contact() {
                   <div>
                     <h3 className="text-white font-medium mb-1">Visit Us</h3>
                     <p className="text-gray-400 text-sm mb-2">Come say hello at our HQ.</p>
-                    <p className="text-gray-300">123 Grooming Lane<br />Creative District<br />New York, NY 10001</p>
+                    <p className="text-gray-300">Jahangir puri G - block 294<br />near by kushal cinema<br />delhi - 110033</p>
                   </div>
                 </div>
               </div>

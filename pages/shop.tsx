@@ -27,7 +27,7 @@ export default function Shop() {
 				]);
 				const prodData = await prodRes.json();
 				const catData = await catRes.json();
-				setProducts(prodData.response || []);
+				setProducts((prodData.response || []).slice(0, 5));
 				setCategories(catData.response || []);
 			} catch (error) {
 				console.error('Error fetching shop data:', error);
