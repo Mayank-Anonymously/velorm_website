@@ -460,7 +460,7 @@ export default function Home() {
 							<div>
 								<h2 className='text-2xl md:text-3xl font-serif text-white flex items-center gap-3'>
 									<Instagram className='w-6 h-6 text-primary' />{' '}
-									@Velorm.official
+									@velormperfume
 								</h2>
 							</div>
 							<a
@@ -470,12 +470,12 @@ export default function Home() {
 							</a>
 						</div>
 						<div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4'>
-							{[1, 2, 3, 4, 5, 6].map((idx) => (
+														{["https://instagram.fixc4-5.fna.fbcdn.net/v/t39.30808-6/615497122_122108232375193416_2398972029841693827_n.jpg?stp=c0.128.1024.1280a_dst-jpg_e35_tt6&_nc_cat=102&ig_cache_key=MzgxMjUzODQ5NTEyNzA1Mjk0OA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjEwMjR4MTUzNi5zZHIuQzIifQ%3D%3D&_nc_ohc=ThAWmDFLQ3QQ7kNvwFfPQ6R&_nc_oc=Adkv2jUGzBCbm0mXv7WYQgiGE_-bP7EXqrXB0SEtYxqzJiXYa4yyaNWQVhZCGu11zqvx2x5P0zm9hWolc_Q9ppiD&_nc_ad=z-m&_nc_cid=2034&_nc_zt=23&_nc_ht=instagram.fixc4-5.fna&_nc_gid=DbT_VsETc1GLVrIr3aCD6w&_nc_ss=8&oh=00_AfyQCycGomZrwmunTMPZjREJISUrSXz-Y3nkYVe6AS22Eg&oe=69AEF0B2", "https://instagram.fixc4-5.fna.fbcdn.net/v/t51.82787-15/618729777_17853621081607376_7575818071345089489_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=102&ig_cache_key=MzgxMjUxNjY3NzAwMzkxMjE4Mg%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjEwMjR4MTM3OS5zZHIuQzIifQ%3D%3D&_nc_ohc=uCgEsxSonm0Q7kNvwHsWg-V&_nc_oc=Adk6ykhitDKNio_ca2083Pb0_9SKuSQgmsB532fc79QbufEwPwdcgtcfoyiwWiP343VV0H0eQoxnJlIg4vVHfRT3&_nc_ad=z-m&_nc_cid=2034&_nc_zt=23&_nc_ht=instagram.fixc4-5.fna&_nc_gid=QhZpTt3f70CbTDxzSY3jfg&_nc_ss=8&oh=00_AfypSkn_1KXIAvUSlrmvvG6T3o2LBAqUeefQGD0PgvDCIw&oe=69AEEF40", "https://instagram.fixc4-2.fna.fbcdn.net/v/t51.82787-15/619259812_17853621138607376_6457770816253154240_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=101&ig_cache_key=MzgxMjUxNzAwNDA5MjU1NjMxMw%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjEwMjR4MTM3OS5zZHIuQzIifQ%3D%3D&_nc_ohc=KqKKakA6n7EQ7kNvwGOSUeZ&_nc_oc=AdnGiVFiWZvPCZnpS0HEDURJHdS3Kwn5HZk3EdWDOpps9fH_WH5Ob4pqDnr9Bi-IOLPIxJ-vUV_o5gO7kV51ykJu&_nc_ad=z-m&_nc_cid=2034&_nc_zt=23&_nc_ht=instagram.fixc4-2.fna&_nc_gid=QhZpTt3f70CbTDxzSY3jfg&_nc_ss=8&oh=00_AfxrnWtWV_epYRdjDkwxgKkkhcoBtcL7LdXF8dP0C3IS0g&oe=69AEF8EF", "https://instagram.fixc4-2.fna.fbcdn.net/v/t51.82787-15/619259812_17853621138607376_6457770816253154240_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=101&ig_cache_key=MzgxMjUxNzAwNDA5MjU1NjMxMw%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjEwMjR4MTM3OS5zZHIuQzIifQ%3D%3D&_nc_ohc=KqKKakA6n7EQ7kNvwGOSUeZ&_nc_oc=AdnGiVFiWZvPCZnpS0HEDURJHdS3Kwn5HZk3EdWDOpps9fH_WH5Ob4pqDnr9Bi-IOLPIxJ-vUV_o5gO7kV51ykJu&_nc_ad=z-m&_nc_cid=2034&_nc_zt=23&_nc_ht=instagram.fixc4-2.fna&_nc_gid=QhZpTt3f70CbTDxzSY3jfg&_nc_ss=8&oh=00_AfxrnWtWV_epYRdjDkwxgKkkhcoBtcL7LdXF8dP0C3IS0g&oe=69AEF8EF"].map((idx) => (
 								<div
 									key={idx}
 									className='aspect-square relative group overflow-hidden rounded-xl cursor-pointer'>
 									<img
-										src={`/src/assets/ig/post_${idx}.jpg`}
+										src={idx}
 										alt='IG Post'
 										className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-500'
 									/>

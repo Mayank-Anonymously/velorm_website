@@ -312,7 +312,7 @@ export default function Home() {
 						<div className='flex items-center justify-between mb-12'>
 							<div>
 								<h2 className='text-3xl font-serif text-white flex items-center gap-3'>
-									<Instagram className='w-6 h-6 text-primary' />{' '}
+									<Instagram className='w-6 h-6 text-primary' />
 									@Velorm.official
 								</h2>
 							</div>

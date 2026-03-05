@@ -30,7 +30,7 @@ export default function Footer() {
 								Elevating the daily routine of modern gentlemen with
 								nature-inspired premium care.
 							</p>
-							<div className='flex items-center gap-4'>
+							{/* <div className='flex items-center gap-4'>
 								<a
 									href='#'
 									className='w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-black transition-all'>
@@ -46,7 +46,7 @@ export default function Footer() {
 									className='w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-black transition-all'>
 									<Facebook className='w-5 h-5' />
 								</a>
-							</div>
+							</div> */}
 						</div>
 						<div>
 							<h3 className='text-white font-medium mb-8'>Quick Links</h3>
@@ -65,20 +65,7 @@ export default function Footer() {
 										Our Story
 									</Link>
 								</li>
-								<li>
-									<Link
-										href='/about'
-										className='hover:text-primary transition-colors'>
-										Sustainability
-									</Link>
-								</li>
-								<li>
-									<Link
-										href='#'
-										className='hover:text-primary transition-colors'>
-										Store Locator
-									</Link>
-								</li>
+							
 							</ul>
 						</div>
 						<div>
