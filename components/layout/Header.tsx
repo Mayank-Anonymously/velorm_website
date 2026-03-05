@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, ShoppingBag, Menu, X, User, LogOut, Package } from 'lucide-react';
+import { Search, ShoppingBag, Menu, X, User, LogOut, Package, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '@/store/store';
@@ -46,6 +46,18 @@ export default function Header() {
 						className='text-sm font-medium text-gray-300 hover:text-white transition-colors'>
 						Contact Us
 					</Link>
+					<div className="relative group">
+						<button className="text-sm font-medium text-gray-300 hover:text-white transition-colors flex items-center gap-1 cursor-default">
+							Policies <ChevronDown className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
+						</button>
+						<div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[200px] py-2 bg-[#1A1A1A]/95 backdrop-blur-xl border border-white/10 rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 shadow-xl flex flex-col">
+							<div className="absolute -top-4 left-0 right-0 h-4 bg-transparent"></div>
+							<Link href="/terms-of-service" className="px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors">Terms of Service</Link>
+							<Link href="/privacy-policy" className="px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors">Privacy Policy</Link>
+							<Link href="/shipping-policy" className="px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors">Shipping Policy</Link>
+							<Link href="/refund-policy" className="px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors">Return & Refund Policy</Link>
+						</div>
+					</div>
 				</div>
 
 				{/* Right Icons */}
@@ -128,6 +140,34 @@ export default function Header() {
 							className='text-lg font-medium text-gray-200 hover:text-white transition-colors'>
 							Contact Us
 						</Link>
+
+						<div className="flex flex-col gap-4 mt-2 border-t border-white/10 pt-6">
+							<span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Policies</span>
+							<Link
+								href='/terms-of-service'
+								onClick={() => setMobileMenuOpen(false)}
+								className='text-lg font-medium text-gray-200 hover:text-white transition-colors'>
+								Terms of Service
+							</Link>
+							<Link
+								href='/privacy-policy'
+								onClick={() => setMobileMenuOpen(false)}
+								className='text-lg font-medium text-gray-200 hover:text-white transition-colors'>
+								Privacy Policy
+							</Link>
+							<Link
+								href='/shipping-policy'
+								onClick={() => setMobileMenuOpen(false)}
+								className='text-lg font-medium text-gray-200 hover:text-white transition-colors'>
+								Shipping Policy
+							</Link>
+							<Link
+								href='/refund-policy'
+								onClick={() => setMobileMenuOpen(false)}
+								className='text-lg font-medium text-gray-200 hover:text-white transition-colors'>
+								Return & Refund Policy
+							</Link>
+						</div>
 
 						{isAuthenticated ? (
 							<div className='flex flex-col gap-4 mt-2'>
