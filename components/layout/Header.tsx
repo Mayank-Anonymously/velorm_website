@@ -36,16 +36,16 @@ export default function Header() {
 						className='text-sm font-medium text-gray-300 hover:text-white transition-colors'>
 						Product
 					</Link>
-					<a
-						href='#'
+					<Link
+						href='/about'
 						className='text-sm font-medium text-gray-300 hover:text-white transition-colors'>
 						Our Story
-					</a>
-					<a
-						href='#'
+					</Link>
+					<Link
+						href='/contact'
 						className='text-sm font-medium text-gray-300 hover:text-white transition-colors'>
-						News &amp; Event
-					</a>
+						Contact Us
+					</Link>
 				</div>
 
 				{/* Right Icons */}
@@ -116,18 +116,18 @@ export default function Header() {
 							className='text-lg font-medium text-gray-200 hover:text-white transition-colors'>
 							Product
 						</Link>
-						<a
-							href='#'
+						<Link
+							href='/about'
 							onClick={() => setMobileMenuOpen(false)}
 							className='text-lg font-medium text-gray-200 hover:text-white transition-colors'>
 							Our Story
-						</a>
-						<a
-							href='#'
+						</Link>
+						<Link
+							href='/contact'
 							onClick={() => setMobileMenuOpen(false)}
 							className='text-lg font-medium text-gray-200 hover:text-white transition-colors'>
-							News &amp; Event
-						</a>
+							Contact Us
+						</Link>
 
 						{isAuthenticated ? (
 							<div className='flex flex-col gap-4 mt-2'>

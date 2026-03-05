@@ -26,8 +26,8 @@ export default function Home() {
 
 	useEffect(() => {
 		fetch('https://api.velorm.com/api/v1/product/get-all-products')
-			.then(r => r.json())
-			.then(d => {
+			.then((r) => r.json())
+			.then((d) => {
 				const products = (d.response || []).slice(0, 6);
 				setFeaturedProducts(products);
 			})
@@ -35,33 +35,47 @@ export default function Home() {
 	}, []);
 
 	const goNext = useCallback(() => {
-		setActiveSlide(i => (i + 1) % Math.max(featuredProducts.length, 1));
+		setActiveSlide((i) => (i + 1) % Math.max(featuredProducts.length, 1));
 	}, [featuredProducts.length]);
 
 	const goPrev = useCallback(() => {
-		setActiveSlide(i => (i - 1 + Math.max(featuredProducts.length, 1)) % Math.max(featuredProducts.length, 1));
+		setActiveSlide(
+			(i) =>
+				(i - 1 + Math.max(featuredProducts.length, 1)) %
+				Math.max(featuredProducts.length, 1),
+		);
 	}, [featuredProducts.length]);
 
 	const handleAddToCart = (product: any) => {
 		const userId = getEffectiveUserId(user);
-		dispatch(addToCart({ productId: product._id, userId, productData: { cartProduct: product, selQty: 1 } }));
+		dispatch(
+			addToCart({
+				productId: product._id,
+				userId,
+				productData: { cartProduct: product, selQty: 1 },
+			}),
+		);
 	};
 
 	const currentProduct = featuredProducts[activeSlide];
 
 	return (
 		<>
-			<SEO 
-				title="Home" 
-				description="Velorm — Premium perfumes and luxury attars for the modern individual. Discover our curated collection of artisanal scents, including Woody, Sweet, and Floral fragrances."
+			<SEO
+				title='Home'
+				description='Velorm — Premium perfumes and luxury attars for the modern individual. Discover our curated collection of artisanal scents, including Woody, Sweet, and Floral fragrances.'
 			/>
 			<Header />
 			<main className='min-h-screen bg-background text-foreground font-sans selection:bg-primary selection:text-white overflow-x-hidden'>
 				{/* Hero Background - only on home page */}
 				<div className='absolute top-0 left-0 w-full h-screen z-0 pointer-events-none'>
-					<img src={iage.src} alt="" className="w-full h-full object-cover opacity-60" />
-					<div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background/50" />
-					<div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+					<img
+						src={iage.src}
+						alt=''
+						className='w-full h-full object-cover opacity-60'
+					/>
+					<div className='absolute inset-0 bg-gradient-to-r from-background via-transparent to-background/50' />
+					<div className='absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent' />
 				</div>
 
 				{/* Hero Content */}
@@ -79,7 +93,7 @@ export default function Home() {
 								<div className='flex items-end gap-6 p-6 rounded-3xl bg-white/5 backdrop-blur-sm border border-white/5 hover:border-white/10 transition-all duration-500 w-full max-w-md'>
 									<div className='relative shrink-0'>
 										<img
-												src={`https://api.velorm.com/resources/IMG_3285.JPG`}
+											src={`https://api.velorm.com/resources/IMG_3285.JPG`}
 											alt='Humbling Forest Cologne'
 											className='w-24 h-auto drop-shadow-2xl transform group-hover:-translate-y-2 transition-transform duration-500'
 										/>
@@ -124,7 +138,9 @@ export default function Home() {
 										Velorm elevates your daily routine — blending care,
 										confidence, and community in every moment.
 									</p>
-									<Link href="/shop" className='flex-shrink-0 flex items-center gap-4 px-8 py-3 rounded-full border border-white/20 text-white hover:bg-[#9CAFA3] hover:border-[#9CAFA3] hover:text-black transition-all group'>
+									<Link
+										href='/shop'
+										className='flex-shrink-0 flex items-center gap-4 px-8 py-3 rounded-full border border-white/20 text-white hover:bg-[#9CAFA3] hover:border-[#9CAFA3] hover:text-black transition-all group'>
 										<span>View Our Collections</span>
 										<span className='w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-black/10'>
 											<ArrowRight className='w-4 h-4' />
@@ -141,8 +157,7 @@ export default function Home() {
 								className='hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 z-10 w-[120%] h-[120%] pointer-events-none translate-x-24 opacity-80 mix-blend-lighten'>
 								<div className='w-full h-full flex items-center justify-center relative'>
 									<img
-																						src={`https://api.velorm.com/resources/IMG_3285.JPG`}
-
+										src={`https://api.velorm.com/resources/IMG_3285.JPG`}
 										alt='Man holding Velorm Cologne'
 										className='w-full h-full object-contain object-right drop-shadow-2xl'
 									/>
@@ -152,7 +167,6 @@ export default function Home() {
 					</div>
 				</section>
 
-		
 				{/* Showcase Section: Category Highlight */}
 				<section className='py-24 bg-[#080808] relative overflow-hidden'>
 					<div className='container mx-auto px-4 sm:px-6 relative z-10'>
@@ -161,30 +175,39 @@ export default function Home() {
 								Signature <span className='italic text-primary'>Showcase</span>
 							</h2>
 							<p className='text-gray-400 text-lg leading-relaxed'>
-								Immerse yourself in our most celebrated scent families. Each category is a journey through history, emotion, and craftsmanship.
+								Immerse yourself in our most celebrated scent families. Each
+								category is a journey through history, emotion, and
+								craftsmanship.
 							</p>
 						</div>
 
 						<div className='grid grid-cols-1 lg:grid-cols-2 gap-12'>
 							{/* Large Featured Category */}
-							<motion.div 
+							<motion.div
 								initial={{ opacity: 0, x: -30 }}
 								whileInView={{ opacity: 1, x: 0 }}
 								viewport={{ once: true }}
-								className='relative h-[600px] rounded-[3rem] overflow-hidden group cursor-pointer border border-white/5'
-							>
-								<img 
-																				src={`https://api.velorm.com/resources/IMG_3285.JPG`}
-
-									alt="Traditional Heritage" 
+								className='relative h-[600px] rounded-[3rem] overflow-hidden group cursor-pointer border border-white/5'>
+								<img
+									src={`https://api.velorm.com/resources/IMG_3285.JPG`}
+									alt='Traditional Heritage'
 									className='absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000'
 								/>
 								<div className='absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90' />
 								<div className='absolute bottom-12 left-12 right-12 z-20'>
-									<span className='inline-block px-4 py-1.5 rounded-full bg-primary/20 border border-primary/30 text-primary text-xs font-bold tracking-widest uppercase mb-6'>Premium Selection</span>
-									<h3 className='text-4xl md:text-5xl font-serif text-white mb-4'>Traditional Heritage</h3>
-									<p className='text-gray-300 text-lg mb-8 max-w-md'>The soul of Velorm. Concentrated oils that define luxury and tradition for the modern era.</p>
-									<Link href="/shop" className='inline-flex items-center gap-3 px-8 py-4 bg-white text-black rounded-full font-bold hover:bg-primary transition-colors'>
+									<span className='inline-block px-4 py-1.5 rounded-full bg-primary/20 border border-primary/30 text-primary text-xs font-bold tracking-widest uppercase mb-6'>
+										Premium Selection
+									</span>
+									<h3 className='text-4xl md:text-5xl font-serif text-white mb-4'>
+										Traditional Heritage
+									</h3>
+									<p className='text-gray-300 text-lg mb-8 max-w-md'>
+										The soul of Velorm. Concentrated oils that define luxury and
+										tradition for the modern era.
+									</p>
+									<Link
+										href='/shop'
+										className='inline-flex items-center gap-3 px-8 py-4 bg-white text-black rounded-full font-bold hover:bg-primary transition-colors'>
 										Explore Heritage <ArrowRight className='w-4 h-4' />
 									</Link>
 								</div>
@@ -192,45 +215,56 @@ export default function Home() {
 
 							{/* Right Side Grid */}
 							<div className='grid grid-cols-1 gap-12'>
-								<motion.div 
+								<motion.div
 									initial={{ opacity: 0, x: 30 }}
 									whileInView={{ opacity: 1, x: 0 }}
 									viewport={{ once: true }}
-									className='relative h-[280px] rounded-[2.5rem] overflow-hidden group cursor-pointer border border-white/5'
-								>
-									<img 
-				src={`https://api.velorm.com/resources/IMG_3288.JPG`}
-
-										alt="Modern Sprays" 
+									className='relative h-[280px] rounded-[2.5rem] overflow-hidden group cursor-pointer border border-white/5'>
+									<img
+										src={`https://api.velorm.com/resources/IMG_3288.JPG`}
+										alt='Modern Sprays'
 										className='absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700'
 									/>
 									<div className='absolute inset-0 bg-gradient-to-r from-black via-black/40 to-transparent opacity-80' />
 									<div className='absolute inset-0 p-10 flex flex-col justify-center'>
-										<h3 className='text-3xl font-serif text-white mb-3'>Modern Sprays</h3>
-										<p className='text-gray-400 mb-6 max-w-xs'>Light, airy, and designed for the dynamic lifestyle of today.</p>
-										<Link href="/shop" className='text-primary font-bold flex items-center gap-2 hover:gap-4 transition-all'>
+										<h3 className='text-3xl font-serif text-white mb-3'>
+											Modern Sprays
+										</h3>
+										<p className='text-gray-400 mb-6 max-w-xs'>
+											Light, airy, and designed for the dynamic lifestyle of
+											today.
+										</p>
+										<Link
+											href='/shop'
+											className='text-primary font-bold flex items-center gap-2 hover:gap-4 transition-all'>
 											Discover Collection <ArrowRight className='w-4 h-4' />
 										</Link>
 									</div>
 								</motion.div>
 
-								<motion.div 
+								<motion.div
 									initial={{ opacity: 0, x: 30 }}
 									whileInView={{ opacity: 1, x: 0 }}
 									viewport={{ once: true }}
 									transition={{ delay: 0.2 }}
-									className='relative h-[280px] rounded-[2.5rem] overflow-hidden group cursor-pointer border border-white/5'
-								>
-									<img 
-										src={`https://api.velorm.com/resources/IMG_3306.JPG`} 
-										alt="Artisan Blends" 
+									className='relative h-[280px] rounded-[2.5rem] overflow-hidden group cursor-pointer border border-white/5'>
+									<img
+										src={`https://api.velorm.com/resources/IMG_3306.JPG`}
+										alt='Artisan Blends'
 										className='absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700'
 									/>
 									<div className='absolute inset-0 bg-gradient-to-r from-black via-black/40 to-transparent opacity-80' />
 									<div className='absolute inset-0 p-10 flex flex-col justify-center'>
-										<h3 className='text-3xl font-serif text-white mb-3'>Artisan Blends</h3>
-										<p className='text-gray-400 mb-6 max-w-xs'>Unique, hand-crafted fragrances that tell a story with every note.</p>
-										<Link href="/shop" className='text-primary font-bold flex items-center gap-2 hover:gap-4 transition-all'>
+										<h3 className='text-3xl font-serif text-white mb-3'>
+											Artisan Blends
+										</h3>
+										<p className='text-gray-400 mb-6 max-w-xs'>
+											Unique, hand-crafted fragrances that tell a story with
+											every note.
+										</p>
+										<Link
+											href='/shop'
+											className='text-primary font-bold flex items-center gap-2 hover:gap-4 transition-all'>
 											Discover Collection <ArrowRight className='w-4 h-4' />
 										</Link>
 									</div>
@@ -238,7 +272,7 @@ export default function Home() {
 							</div>
 						</div>
 					</div>
-					
+
 					{/* Background Decorations */}
 					<div className='absolute top-1/2 left-0 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full -translate-y-1/2' />
 					<div className='absolute bottom-0 right-0 w-[300px] h-[300px] bg-primary/5 blur-[100px] rounded-full' />
@@ -249,13 +283,12 @@ export default function Home() {
 					<div className='absolute top-0 right-0 w-96 h-96 bg-primary/10 blur-[120px] rounded-full' />
 					<div className='absolute bottom-0 left-0 w-64 h-64 bg-primary/5 blur-[100px] rounded-full' />
 					<div className='container mx-auto px-4 sm:px-6'>
-
 						{/* Section Label */}
 						<p className='text-primary font-medium tracking-widest uppercase text-sm mb-12 text-center'>
 							Recommended for you
 						</p>
 
-						{featuredProducts.length === 0 ? (
+						{featuredProducts.length === 0 ?
 							/* Loading skeleton */
 							<div className='grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center'>
 								<div className='aspect-square rounded-3xl bg-white/5 animate-pulse' />
@@ -265,18 +298,17 @@ export default function Home() {
 									<div className='h-6 w-1/3 bg-white/5 rounded-full animate-pulse' />
 								</div>
 							</div>
-						) : (
-							<>
+						:	<>
 								<div className='grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center'>
-
 									{/* Product Image with AnimatePresence */}
 									<div className='relative aspect-square rounded-3xl overflow-hidden bg-white/5 border border-white/5'>
 										<AnimatePresence mode='wait'>
 											<motion.img
 												key={currentProduct?._id}
-												src={currentProduct?.productImage?.[0]?.filename
-													? `https://api.velorm.com/resources/${currentProduct.productImage[0].filename}`
-													: currentProduct?.image || ''
+												src={
+													currentProduct?.productImage?.[0]?.filename ?
+														`https://api.velorm.com/resources/${currentProduct.productImage[0].filename}`
+													:	currentProduct?.image || ''
 												}
 												alt={currentProduct?.name}
 												initial={{ opacity: 0, x: 60 }}
@@ -307,25 +339,35 @@ export default function Home() {
 											initial={{ opacity: 0, y: 24 }}
 											animate={{ opacity: 1, y: 0 }}
 											exit={{ opacity: 0, y: -24 }}
-											transition={{ duration: 0.4, ease: 'easeInOut' }}
-										>
+											transition={{ duration: 0.4, ease: 'easeInOut' }}>
 											<p className='text-xs font-bold tracking-widest text-primary uppercase mb-4'>
-												{currentProduct?.category?.name || currentProduct?.category || 'Collection'}
+												{currentProduct?.category?.name ||
+													currentProduct?.category ||
+													'Collection'}
 											</p>
 											<h2 className='text-3xl md:text-5xl font-serif text-white mb-6 leading-tight'>
 												{currentProduct?.name}
 											</h2>
 											<p className='text-gray-400 text-base md:text-lg mb-6 leading-relaxed'>
-												{currentProduct?.description || 'A luxurious fragrance crafted with the finest ingredients for an unforgettable scent experience.'}
+												{currentProduct?.description ||
+													'A luxurious fragrance crafted with the finest ingredients for an unforgettable scent experience.'}
 											</p>
 											<div className='flex items-center gap-1 mb-8'>
 												{[...Array(5)].map((_, i) => (
-													<Star key={i} className='w-4 h-4 fill-primary text-primary' />
+													<Star
+														key={i}
+														className='w-4 h-4 fill-primary text-primary'
+													/>
 												))}
-												<span className='ml-3 text-white font-medium text-sm'>4.9 / 5.0</span>
+												<span className='ml-3 text-white font-medium text-sm'>
+													4.9 / 5.0
+												</span>
 											</div>
 											<p className='text-3xl font-bold text-primary mb-8'>
-												₹{currentProduct?.regularPrice || currentProduct?.price || '—'}
+												₹
+												{currentProduct?.regularPrice ||
+													currentProduct?.price ||
+													'—'}
 											</p>
 											<div className='flex flex-wrap gap-4'>
 												<button
@@ -350,15 +392,15 @@ export default function Home() {
 											key={i}
 											onClick={() => setActiveSlide(i)}
 											className={`transition-all duration-300 rounded-full ${
-												activeSlide === i
-													? 'w-8 h-2.5 bg-primary'
-													: 'w-2.5 h-2.5 bg-white/20 hover:bg-white/40'
+												activeSlide === i ?
+													'w-8 h-2.5 bg-primary'
+												:	'w-2.5 h-2.5 bg-white/20 hover:bg-white/40'
 											}`}
 										/>
 									))}
 								</div>
 							</>
-						)}
+						}
 					</div>
 				</section>
 

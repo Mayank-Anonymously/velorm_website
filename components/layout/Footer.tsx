@@ -11,6 +11,7 @@ import {
 	MapPin,
 	Phone,
 } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Footer() {
 	return (
@@ -51,32 +52,32 @@ export default function Footer() {
 							<h3 className='text-white font-medium mb-8'>Quick Links</h3>
 							<ul className='space-y-4 text-gray-400'>
 								<li>
-									<a
+									<Link
 										href='/shop'
 										className='hover:text-primary transition-colors'>
 										Shop All
-									</a>
+									</Link>
 								</li>
 								<li>
-									<a
-										href='#'
+									<Link
+										href='/about'
 										className='hover:text-primary transition-colors'>
 										Our Story
-									</a>
+									</Link>
 								</li>
 								<li>
-									<a
-										href='#'
+									<Link
+										href='/about'
 										className='hover:text-primary transition-colors'>
 										Sustainability
-									</a>
+									</Link>
 								</li>
 								<li>
-									<a
+									<Link
 										href='#'
 										className='hover:text-primary transition-colors'>
 										Store Locator
-									</a>
+									</Link>
 								</li>
 							</ul>
 						</div>
@@ -84,32 +85,32 @@ export default function Footer() {
 							<h3 className='text-white font-medium mb-8'>Support</h3>
 							<ul className='space-y-4 text-gray-400'>
 								<li>
-									<a
-										href='#'
+									<Link
+										href='/shipping-policy'
 										className='hover:text-primary transition-colors'>
 										Shipping & Returns
-									</a>
+									</Link>
 								</li>
 								<li>
-									<a
-										href='#'
+									<Link
+										href='/faq'
 										className='hover:text-primary transition-colors'>
 										FAQ
-									</a>
+									</Link>
 								</li>
 								<li>
-									<a
-										href='#'
+									<Link
+										href='/contact'
 										className='hover:text-primary transition-colors'>
 										Contact Us
-									</a>
+									</Link>
 								</li>
 								<li>
-									<a
-										href='#'
+									<Link
+										href='/terms-of-service'
 										className='hover:text-primary transition-colors'>
 										Terms of Service
-									</a>
+									</Link>
 								</li>
 							</ul>
 						</div>
@@ -133,16 +134,16 @@ export default function Footer() {
 					<div className='flex flex-col md:flex-row justify-between items-center pt-12 border-t border-white/5 gap-6 text-gray-500 text-sm'>
 						<p>© 2026 Velorm All rights reserved.</p>
 						<div className='flex items-center gap-8'>
-							<a
-								href='#'
+							<Link
+								href='/privacy-policy'
 								className='hover:text-white transition-colors'>
 								Privacy Policy
-							</a>
-							<a
-								href='#'
+							</Link>
+							<Link
+								href='/refund-policy'
 								className='hover:text-white transition-colors'>
-								Cookie Policy
-							</a>
+								Refund Policy
+							</Link>
 						</div>
 					</div>
 				</div>
