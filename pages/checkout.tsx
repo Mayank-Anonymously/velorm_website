@@ -239,10 +239,37 @@ export default function Checkout() {
 								</div>
 							</section>
 
-							{/* Delivery Method */}
 							<section>
 								<div className="flex items-center gap-4 mb-8">
 									<div className="w-10 h-10 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-serif italic text-xl">2</div>
+									<h2 className='text-2xl font-serif text-white'>Order Items</h2>
+								</div>
+								<div className="space-y-4">
+									{items.map((item) => (
+										<div key={item.cartProduct._id} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10">
+											<div className="flex items-center gap-4">
+												<div className="w-12 h-12 rounded-xl bg-white/10 overflow-hidden">
+													<img src={item.cartProduct.image || ''} alt={item.cartProduct.name} className="w-full h-full object-cover" />
+												</div>
+												<div>
+													<p className="text-white font-medium">{item.cartProduct.name} <span className="text-sm text-gray-500 font-normal ml-2">x{item.selQty}</span></p>
+													{item.cartProduct.unitValue && item.cartProduct.unit && (
+														<p className="text-xs text-gray-500">
+															{item.cartProduct.unitValue} {item.cartProduct.unit}
+														</p>
+													)}
+												</div>
+											</div>
+											<p className="text-white font-medium">₹{((item.cartProduct.regularPrice || item.cartProduct.price || 0) * item.selQty).toFixed(2)}</p>
+										</div>
+									))}
+								</div>
+							</section>
+
+							{/* Delivery Method */}
+							<section>
+								<div className="flex items-center gap-4 mb-8">
+									<div className="w-10 h-10 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-serif italic text-xl">3</div>
 									<h2 className='text-2xl font-serif text-white'>Delivery Method</h2>
 								</div>
 								<div className='p-6 rounded-[2rem] bg-primary/5 border border-primary/20 flex justify-between items-center'>

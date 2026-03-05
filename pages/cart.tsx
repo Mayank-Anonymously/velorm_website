@@ -159,6 +159,11 @@ export default function Cart() {
 															item.cartProduct.price ||
 															0) * item.selQty
 													).toFixed(2)}
+													{item.cartProduct.unitValue && item.cartProduct.unit && (
+														<span className="text-sm text-gray-500 font-normal ml-2">
+															({item.cartProduct.unitValue} {item.cartProduct.unit})
+														</span>
+													)}
 												</p>
 											</div>
 										</motion.div>

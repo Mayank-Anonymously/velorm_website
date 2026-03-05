@@ -158,7 +158,14 @@ export default function Shop() {
 											<h3 className='text-xl font-medium text-white mb-2'>
 												{product.name}
 											</h3>
-											<p className='text-lg text-gray-400'>₹{product.price}</p>
+											<p className='text-lg text-gray-400'>
+												₹{product.price}
+												{product.unitValue && product.unit && (
+													<span className="text-sm text-gray-500 font-normal ml-2">
+														({product.unitValue} {product.unit})
+													</span>
+												)}
+											</p>
 										</div>
 									</motion.div>
 								))}

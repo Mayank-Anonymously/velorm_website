@@ -370,6 +370,11 @@ export default function Home() {
 												{currentProduct?.regularPrice ||
 													currentProduct?.price ||
 													'—'}
+												{currentProduct?.unitValue && currentProduct?.unit && (
+													<span className="text-xl text-gray-500 font-normal ml-2">
+														({currentProduct.unitValue} {currentProduct.unit})
+													</span>
+												)}
 											</p>
 											<div className='flex flex-wrap gap-4'>
 												<button
