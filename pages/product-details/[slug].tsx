@@ -137,10 +137,8 @@ export default function ProductDetails() {
 								<p className='text-2xl md:text-3xl font-medium text-primary mb-8'>
 									₹{product.price}
 								</p>
-								<p className='text-gray-400 leading-relaxed mb-10'>
-									{product.description ||
-										'Immerse yourself in the world of luxury with this exquisite fragrance. Crafted with the finest ingredients to ensure a long-lasting and captivating scent experience.'}
-								</p>
+																<div className='text-gray-400 leading-relaxed mb-10' dangerouslySetInnerHTML={{ __html: product.description }} />
+
 							</div>
 
 							<div className='space-y-6 mb-12'>

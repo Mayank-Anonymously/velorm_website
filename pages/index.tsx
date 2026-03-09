@@ -58,7 +58,6 @@ export default function Home() {
 	};
 
 	const currentProduct = featuredProducts[activeSlide];
-
 	return (
 		<>
 			<SEO
@@ -350,10 +349,10 @@ export default function Home() {
 											<h2 className='text-3xl md:text-5xl font-serif text-white mb-6 leading-tight'>
 												{currentProduct?.name}
 											</h2>
-											<p className='text-gray-400 text-base md:text-lg mb-6 leading-relaxed'>
-												{currentProduct?.description ||
-													'A luxurious fragrance crafted with the finest ingredients for an unforgettable scent experience.'}
-											</p>
+
+																<div className='text-gray-400 text-base md:text-lg mb-6 leading-relaxed' dangerouslySetInnerHTML={{ __html: currentProduct.description }} />
+											
+										
 											<div className='flex items-center gap-1 mb-8'>
 												{[...Array(5)].map((_, i) => (
 													<Star
