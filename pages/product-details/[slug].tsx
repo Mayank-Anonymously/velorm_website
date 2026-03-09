@@ -120,8 +120,13 @@ export default function ProductDetails() {
 								<p className='text-xs font-bold tracking-widest text-primary uppercase mb-4'>
 									{product.category?.name || product.category}
 								</p>
-								<h1 className='text-3xl sm:text-4xl md:text-5xl font-serif text-white mb-4'>
+								<h1 className='text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-white mb-4'>
 									{product.name}
+									{product.unit_value && product.unit && (
+										<span className="text-xl md:text-2xl text-gray-500 font-bold ml-4">
+											({product.unit_value} {product.unit})
+										</span>
+									)}
 								</h1>
 								<div className='flex items-center gap-4 mb-6'>
 									<div className='flex items-center gap-1'>
@@ -134,7 +139,7 @@ export default function ProductDetails() {
 									</div>
 									<span className='text-sm text-gray-500'>(24 Reviews)</span>
 								</div>
-								<p className='text-2xl md:text-3xl font-medium text-primary mb-8'>
+								<p className='text-2xl md:text-3xl font-bold text-primary mb-8'>
 									₹{product.price}
 								</p>
 																<div className='text-gray-400 leading-relaxed mb-10' dangerouslySetInnerHTML={{ __html: product.description }} />

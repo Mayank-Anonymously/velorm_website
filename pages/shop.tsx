@@ -155,16 +155,16 @@ export default function Shop() {
 											<p className='text-xs font-bold tracking-widest text-primary uppercase mb-2'>
 												{product.category?.name || product.category}
 											</p>
-											<h3 className='text-xl font-medium text-white mb-2'>
+											<h3 className='text-xl font-bold text-white mb-2'>
 												{product.name}
-											</h3>
-											<p className='text-lg text-gray-400'>
-												₹{product.price}
-												{product.unitValue && product.unit && (
-													<span className="text-sm text-gray-500 font-normal ml-2">
-														({product.unitValue} {product.unit})
+												{product.unit_value && product.unit && (
+													<span className="text-sm text-gray-500 font-bold ml-2">
+														({product.unit_value} {product.unit})
 													</span>
 												)}
+											</h3>
+											<p className='text-lg text-gray-400 font-bold'>
+												₹{product.price}
 											</p>
 										</div>
 									</motion.div>

@@ -58,6 +58,8 @@ export default function Home() {
 	};
 
 	const currentProduct = featuredProducts[activeSlide];
+
+	console.log(currentProduct)
 	return (
 		<>
 			<SEO
@@ -346,8 +348,13 @@ export default function Home() {
 													currentProduct?.category ||
 													'Collection'}
 											</p>
-											<h2 className='text-3xl md:text-5xl font-serif text-white mb-6 leading-tight'>
+											<h2 className='text-3xl md:text-5xl font-serif font-bold text-white mb-6 leading-tight'>
 												{currentProduct?.name}
+												{currentProduct?.unit_value && currentProduct?.unit && (
+													<span className="text-xl md:text-2xl text-gray-400 font-bold ml-2">
+														({currentProduct.unit_value} {currentProduct.unit})
+													</span>
+												)}
 											</h2>
 
 																<div className='text-gray-400 text-base md:text-lg mb-6 leading-relaxed' dangerouslySetInnerHTML={{ __html: currentProduct.description }} />
@@ -369,11 +376,6 @@ export default function Home() {
 												{currentProduct?.regularPrice ||
 													currentProduct?.price ||
 													'—'}
-												{currentProduct?.unitValue && currentProduct?.unit && (
-													<span className="text-xl text-gray-500 font-normal ml-2">
-														({currentProduct.unitValue} {currentProduct.unit})
-													</span>
-												)}
 											</p>
 											<div className='flex flex-wrap gap-4'>
 												<button

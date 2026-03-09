@@ -252,15 +252,18 @@ export default function Checkout() {
 													<img src={item.cartProduct.image || ''} alt={item.cartProduct.name} className="w-full h-full object-cover" />
 												</div>
 												<div>
-													<p className="text-white font-medium">{item.cartProduct.name} <span className="text-sm text-gray-500 font-normal ml-2">x{item.selQty}</span></p>
-													{item.cartProduct.unitValue && item.cartProduct.unit && (
-														<p className="text-xs text-gray-500">
-															{item.cartProduct.unitValue} {item.cartProduct.unit}
-														</p>
-													)}
+													<p className="text-white font-bold">
+														{item.cartProduct.name}
+														{item.cartProduct.unit_value && item.cartProduct.unit && (
+															<span className="text-sm text-gray-500 font-bold ml-2">
+																({item.cartProduct.unit_value} {item.cartProduct.unit})
+															</span>
+														)}
+														<span className="text-sm text-gray-500 font-bold ml-2">x{item.selQty}</span>
+													</p>
 												</div>
 											</div>
-											<p className="text-white font-medium">₹{((item.cartProduct.regularPrice || item.cartProduct.price || 0) * item.selQty).toFixed(2)}</p>
+											<p className="text-white font-bold">₹{((item.cartProduct.regularPrice || item.cartProduct.price || 0) * item.selQty).toFixed(2)}</p>
 										</div>
 									))}
 								</div>

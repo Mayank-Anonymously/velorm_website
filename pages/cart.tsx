@@ -112,8 +112,13 @@ export default function Cart() {
 
 											{/* Product Info */}
 											<div className='flex-grow min-w-[200px]'>
-												<h3 className='text-lg font-medium text-white mb-1'>
+												<h3 className='text-lg font-bold text-white mb-1'>
 													{item.cartProduct.name}
+													{item.cartProduct.unit_value && item.cartProduct.unit && (
+														<span className="text-sm text-gray-500 font-bold ml-2">
+															({item.cartProduct.unit_value} {item.cartProduct.unit})
+														</span>
+													)}
 												</h3>
 												<p className='text-sm text-gray-400 mb-4'>
 													{item.cartProduct.category?.name ||
@@ -152,18 +157,13 @@ export default function Cart() {
 
 											{/* Price */}
 											<div className='text-right w-full sm:w-auto'>
-												<p className='text-xl font-medium text-white'>
+												<p className='text-xl font-bold text-white'>
 													₹
 													{(
 														(item.cartProduct.regularPrice ||
 															item.cartProduct.price ||
 															0) * item.selQty
 													).toFixed(2)}
-													{item.cartProduct.unitValue && item.cartProduct.unit && (
-														<span className="text-sm text-gray-500 font-normal ml-2">
-															({item.cartProduct.unitValue} {item.cartProduct.unit})
-														</span>
-													)}
 												</p>
 											</div>
 										</motion.div>
