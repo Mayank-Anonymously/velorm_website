@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, SlidersHorizontal, ShoppingBag, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/store/store';
@@ -10,6 +11,7 @@ import Footer from '@/components/layout/Footer';
 import { getEffectiveUserId } from '@/lib/auth';
 
 export default function Shop() {
+	const router = useRouter();
 	const dispatch = useDispatch<AppDispatch>();
 	const { user } = useSelector((state: RootState) => state.auth);
 	const [products, setProducts] = useState<any[]>([]);
@@ -21,9 +23,12 @@ export default function Shop() {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
+				const apiBase = typeof window !== 'undefined' && window.location.hostname === 'localhost' 
+					? 'http://localhost:9291' 
+					: 'https://api.velorm.com';
 				const [prodRes, catRes] = await Promise.all([
-					fetch('https://api.velorm.com/api/v1/product/get-all-products'),
-					fetch('https://api.velorm.com/api/v1/category/get-all-categories'),
+					fetch(`${apiBase}/api/v1/product/get-all-products`),
+					fetch(`${apiBase}/api/v1/category/get-all-categories`),
 				]);
 				const prodData = await prodRes.json();
 				const catData = await catRes.json();
@@ -50,6 +55,23 @@ export default function Shop() {
 				},
 			}),
 		);
+		alert('Added to bag!');
+	};
+
+	const handleBuyNow = (product: any) => {
+		const userId = getEffectiveUserId(user);
+		dispatch(
+			addToCart({
+				productId: product._id,
+				userId,
+				productData: {
+					cartProduct: product,
+					selQty: 1,
+				},
+				increment: false,
+			}),
+		);
+		router.push('/checkout');
 	};
 
 	const filteredProducts = products.filter((p) => {
@@ -139,15 +161,24 @@ export default function Shop() {
 													alt={product.name}
 													className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-700'
 												/>
-												<div className='absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity' />
-												<button
-													onClick={(e) => {
-														e.preventDefault();
-														handleAddToCart(product);
-													}}
-													className='absolute bottom-6 right-6 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-black opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hover:scale-110'>
-													<ShoppingBag className='w-5 h-5' />
-												</button>
+												<div className='absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4'>
+													<button
+														onClick={(e) => {
+															e.preventDefault();
+															handleBuyNow(product);
+														}}
+														className='px-6 py-2 bg-white text-black text-sm font-bold rounded-full transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-primary'>
+														Buy Now
+													</button>
+													<button
+														onClick={(e) => {
+															e.preventDefault();
+															handleAddToCart(product);
+														}}
+														className='w-10 h-10 bg-primary/20 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-primary hover:text-black hover:scale-110'>
+														<ShoppingBag className='w-4 h-4' />
+													</button>
+												</div>
 											</div>
 										</Link>
 

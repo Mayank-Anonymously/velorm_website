@@ -22,8 +22,11 @@ export default function ProductDetails() {
 	useEffect(() => {
 		if (slug) {
 			const fetchProduct = async () => {
+				const apiBase = typeof window !== 'undefined' && window.location.hostname === 'localhost' 
+					? 'http://localhost:9291' 
+					: 'https://api.velorm.com';
 				try {
-					const res = await fetch(`https://api.velorm.com/api/v1/product/get-product-by-slug/${slug}`);
+					const res = await fetch(`${apiBase}/api/v1/product/get-product-by-slug/${slug}`);
 					const data = await res.json();
 					setProduct(data.response);
 				} catch (error) {
@@ -50,6 +53,23 @@ export default function ProductDetails() {
 			}),
 		);
 		alert('Added to bag!');
+	};
+
+	const handleBuyNow = () => {
+		if (!product) return;
+		const userId = getEffectiveUserId(user);
+		dispatch(
+			addToCart({
+				productId: product._id,
+				userId,
+				productData: {
+					cartProduct: product,
+					selQty: 1,
+				},
+				increment: false,
+			}),
+		);
+		router.push('/checkout');
 	};
 
 	if (loading) return <div className="min-h-screen bg-background flex items-center justify-center pt-20">
@@ -87,7 +107,7 @@ export default function ProductDetails() {
 											transition={{ duration: 0.3 }}
 											className='aspect-square rounded-[3rem] overflow-hidden bg-white/5 border border-white/5'>
 											<img
-												src={`https://api.velorm.com/resources/${product.productImage[0].filename}`}
+												src={`${typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:9291' : 'https://api.velorm.com'}/resources/${product.productImage[0].filename}`}
 												alt={product.name}
 												className='w-full h-full object-cover'
 											/>
@@ -146,10 +166,15 @@ export default function ProductDetails() {
 
 							</div>
 
-							<div className='space-y-6 mb-12'>
+							<div className='flex flex-col sm:flex-row gap-4 mb-12'>
+								<button
+									onClick={handleBuyNow}
+									className='flex-1 py-5 bg-white text-black font-bold rounded-full hover:bg-primary transition-colors flex items-center justify-center gap-3 shadow-lg'>
+									Buy Now
+								</button>
 								<button
 									onClick={handleAddToCart}
-									className='w-full py-5 bg-primary text-black font-bold rounded-full hover:scale-105 transition-transform flex items-center justify-center gap-3 shadow-lg shadow-primary/20'>
+									className='flex-1 py-5 border border-white/20 text-white font-bold rounded-full hover:bg-white/5 transition-colors flex items-center justify-center gap-3'>
 									<ShoppingBag className='w-5 h-5' /> Add to Bag
 								</button>
 							</div>

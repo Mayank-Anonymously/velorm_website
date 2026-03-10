@@ -8,6 +8,7 @@ import {
 	ChevronRight,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/store/store';
@@ -19,13 +20,17 @@ import Footer from '@/components/layout/Footer';
 import SEO from '@/components/SEO';
 
 export default function Home() {
+	const router = useRouter();
 	const dispatch = useDispatch<AppDispatch>();
 	const { user } = useSelector((state: RootState) => state.auth);
 	const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
 	const [activeSlide, setActiveSlide] = useState(0);
 
 	useEffect(() => {
-		fetch('https://api.velorm.com/api/v1/product/get-all-products')
+		const apiBase = typeof window !== 'undefined' && window.location.hostname === 'localhost' 
+			? 'http://localhost:9291' 
+			: 'https://api.velorm.com';
+		fetch(`${apiBase}/api/v1/product/get-all-products`)
 			.then((r) => r.json())
 			.then((d) => {
 				const products = (d.response || []).slice(0, 5);
@@ -55,6 +60,20 @@ export default function Home() {
 				productData: { cartProduct: product, selQty: 1 },
 			}),
 		);
+		alert('Added to bag!');
+	};
+
+	const handleBuyNow = (product: any) => {
+		const userId = getEffectiveUserId(user);
+		dispatch(
+			addToCart({
+				productId: product._id,
+				userId,
+				productData: { cartProduct: product, selQty: 1 },
+				increment: false
+			}),
+		);
+		router.push('/checkout');
 	};
 
 	const currentProduct = featuredProducts[activeSlide];
@@ -90,35 +109,37 @@ export default function Home() {
 								whileInView={{ opacity: 1, y: 0 }}
 								viewport={{ once: true }}
 								transition={{ duration: 0.8 }}
-								className='relative group'>
-								<div className='flex items-end gap-6 p-6 rounded-3xl bg-white/5 backdrop-blur-sm border border-white/5 hover:border-white/10 transition-all duration-500 w-full max-w-md'>
-									<div className='relative shrink-0'>
-										<img
-											src={`https://api.velorm.com/resources/IMG_3285.JPG`}
-											alt='Humbling Forest Cologne'
-											className='w-24 h-auto drop-shadow-2xl transform group-hover:-translate-y-2 transition-transform duration-500'
-										/>
-									</div>
-									<div className='flex-1 pb-2'>
-										<h3 className='text-xl font-serif font-medium text-white mb-2'>
-											Rose Gulab
-										</h3>
-										<p className='text-sm text-gray-400 leading-relaxed mb-6 line-clamp-2'>
-											Velorm elevates your daily routine — blending care,
-											confidence,
-										</p>
-										<div className='flex items-center gap-4'>
-											<Link href='/checkout' className='contents'>
-												<button className='px-6 py-2 rounded-full border border-white/20 text-sm hover:bg-white hover:text-black transition-all'>
+								className='relative group'
+							>
+								{featuredProducts[0] && (
+									<div className='flex items-end gap-6 p-6 rounded-3xl bg-white/5 backdrop-blur-sm border border-white/5 hover:border-white/10 transition-all duration-500 w-full max-w-md'>
+										<div className='relative shrink-0'>
+											<img
+												src={`${typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:9291' : 'https://api.velorm.com'}/resources/${featuredProducts[0].productImage?.[0]?.filename || 'IMG_3285.JPG'}`}
+												alt={featuredProducts[0].name}
+												className='w-24 h-auto drop-shadow-2xl transform group-hover:-translate-y-2 transition-transform duration-500'
+											/>
+										</div>
+										<div className='flex-1 pb-2'>
+											<h3 className='text-xl font-serif font-medium text-white mb-2'>
+												{featuredProducts[0].name}
+											</h3>
+											<p className='text-sm text-gray-400 leading-relaxed mb-6 line-clamp-2' dangerouslySetInnerHTML={{ __html: featuredProducts[0].description }} />
+											<div className='flex items-center gap-4'>
+												<button 
+													onClick={() => handleBuyNow(featuredProducts[0])}
+													className='px-6 py-2 rounded-full border border-white/20 text-sm hover:bg-white hover:text-black transition-all'>
 													Buy Now
 												</button>
-											</Link>
-											<button className='w-10 h-10 flex items-center justify-center rounded-full bg-[#9CAFA3] text-black hover:scale-105 transition-transform'>
-												<ShoppingBag className='w-4 h-4' />
-											</button>
+												<button 
+													onClick={() => handleAddToCart(featuredProducts[0])}
+													className='w-10 h-10 flex items-center justify-center rounded-full bg-[#9CAFA3] text-black hover:scale-105 transition-transform'>
+													<ShoppingBag className='w-4 h-4' />
+												</button>
+											</div>
 										</div>
 									</div>
-								</div>
+								)}
 							</motion.div>
 						</div>
 
@@ -379,12 +400,17 @@ export default function Home() {
 											</p>
 											<div className='flex flex-wrap gap-4'>
 												<button
+													onClick={() => handleBuyNow(currentProduct)}
+													className='px-8 py-4 bg-white text-black font-bold rounded-full hover:bg-primary transition-colors'>
+													Buy Now
+												</button>
+												<button
 													onClick={() => handleAddToCart(currentProduct)}
-													className='flex items-center gap-2 px-8 py-4 bg-primary text-black font-bold rounded-full hover:scale-105 transition-transform shadow-lg shadow-primary/20'>
+													className='flex items-center gap-2 px-8 py-4 border border-white/20 text-white font-bold rounded-full hover:bg-white/5 transition-colors'>
 													<ShoppingBag className='w-4 h-4' /> Add to Bag
 												</button>
 												<Link href={`/product-details/${currentProduct?.slug}`}>
-													<button className='px-8 py-4 border border-white/20 text-white rounded-full hover:bg-white/5 transition-colors'>
+													<button className='px-8 py-4 border border-white/20 text-gray-400 rounded-full hover:text-white transition-colors'>
 														View Details
 													</button>
 												</Link>

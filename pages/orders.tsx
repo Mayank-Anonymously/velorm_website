@@ -28,8 +28,11 @@ export default function Orders() {
         }
 
         const fetchOrders = async () => {
+            const apiBase = typeof window !== 'undefined' && window.location.hostname === 'localhost' 
+                ? 'http://localhost:9291' 
+                : 'https://api.velorm.com';
             try {
-                const res = await fetch('https://api.velorm.com/api/v1/order/get-all-orders');
+                const res = await fetch(`${apiBase}/api/v1/order/get-all-orders`);
                 const data = await res.json();
                 const allOrders: any[] = data.response || [];
                 // Filter to only this user's orders

@@ -55,7 +55,10 @@ export default function Checkout() {
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
 
+	const [paymentMethod, setPaymentMethod] = useState<'COD' | 'PHONEPE'>('COD');
+
 	const handlePayment = async () => {
+		console.log("Handle Payment Clicked", { itemsCount: items.length, paymentMethod, loading });
 		if (items.length === 0) {
 			alert("Your bag is empty");
 			return;
@@ -67,13 +70,12 @@ export default function Checkout() {
 
 			// 1. If not authenticated, create user first
 			if (!isAuthenticated) {
-				// Step A: Create user record via sendOtp (backend creates user if missing)
+				console.log("Creating user for unauthenticated checkout...");
 				const otpResult = await dispatch(sendOtp({ contact: formData.contact }));
 				if (sendOtp.fulfilled.match(otpResult)) {
 					const newUser = otpResult.payload.response;
 					currentUserId = newUser._id;
 
-					// Step B: Update user details (name, email)
 					await dispatch(updateProfile({
 						name: `${formData.firstName} ${formData.lastName}`,
 						email: formData.email,
@@ -84,7 +86,64 @@ export default function Checkout() {
 				}
 			}
 
-			// 2. Construct order payload
+			if (paymentMethod === 'PHONEPE') {
+				console.log("Initiating PhonePe payment...");
+				// Use relative path or local URL for testing
+				const apiBase = typeof window !== 'undefined' && window.location.hostname === 'localhost' 
+					? 'http://localhost:9291' 
+					: 'https://api.velorm.com';
+				
+				const res = await fetch(`${apiBase}/api/v1/payment/initiate`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						amount: total,
+						contact: formData.contact,
+						userId: currentUserId
+					})
+				});
+				const data = await res.json();
+				console.log("PhonePe Response:", data);
+				if (data.baseResponse.status === 1) {
+					localStorage.setItem('temp_order_data', JSON.stringify({
+						orderPlace: 'Website',
+						product: items.map((item) => ({
+							id: item.cartProduct._id,
+							selQty: item.selQty,
+						})),
+						user: {
+							_id: currentUserId,
+							name: `${formData.firstName} ${formData.lastName}`,
+							email: formData.email,
+							contact: formData.contact,
+						},
+						shippingaddress: {
+							location: formData.city,
+							street: formData.address,
+							address: `${formData.address}, ${formData.city}, ${formData.postalCode}`,
+							landmark: formData.landmark || formData.city,
+							locationObj: {
+								type: 'Point',
+								coordinates: [0, 0],
+							},
+						},
+						status: 'PENDING',
+						amount: total,
+						deliverySchedule: 'Standard',
+						deliveryDate: new Date().toISOString(),
+						paymentOption: 'PHONEPE',
+						deliveryType: 'Standard',
+						type: 'web',
+					}));
+					window.location.href = data.response.url;
+					return;
+				} else {
+					throw new Error(data.baseResponse.message);
+				}
+			}
+
+			// 2. Construct order payload for COD
+			console.log("Placing COD order...");
 			const orderData = {
 				orderPlace: 'Website',
 				product: items.map((item) => ({
@@ -124,6 +183,7 @@ export default function Checkout() {
 				throw new Error((result.payload as any)?.message || 'Order placement failed');
 			}
 		} catch (err: any) {
+			console.error("Payment Error:", err);
 			alert(err.message || "An error occurred");
 		} finally {
 			setLoading(false);
@@ -299,13 +359,27 @@ export default function Checkout() {
 								</div>
 
 								<div className='space-y-4 mb-10'>
-									<div className='p-5 rounded-2xl border-2 border-primary bg-primary/5 flex items-center gap-4'>
-										<div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-black">
+									<div 
+										onClick={() => setPaymentMethod('COD')}
+										className={`p-5 rounded-2xl border-2 transition-all cursor-pointer flex items-center gap-4 ${paymentMethod === 'COD' ? 'border-primary bg-primary/5' : 'border-white/10 hover:border-white/20'}`}>
+										<div className={`w-10 h-10 rounded-xl flex items-center justify-center ${paymentMethod === 'COD' ? 'bg-primary text-black' : 'bg-white/5 text-gray-400'}`}>
 											<CreditCard className='w-5 h-5' />
 										</div>
 										<div>
 											<span className='block text-sm font-bold text-white uppercase tracking-widest'>Cash On Delivery</span>
 											<span className='text-xs text-primary'>Pay when your scent arrives</span>
+										</div>
+									</div>
+
+									<div 
+										onClick={() => setPaymentMethod('PHONEPE')}
+										className={`p-5 rounded-2xl border-2 transition-all cursor-pointer flex items-center gap-4 ${paymentMethod === 'PHONEPE' ? 'border-primary bg-primary/5' : 'border-white/10 hover:border-white/20'}`}>
+										<div className={`w-10 h-10 rounded-xl flex items-center justify-center ${paymentMethod === 'PHONEPE' ? 'bg-primary text-black' : 'bg-white/5 text-gray-400'}`}>
+											<Phone className='w-5 h-5' />
+										</div>
+										<div>
+											<span className='block text-sm font-bold text-white uppercase tracking-widest'>PhonePe</span>
+											<span className='text-xs text-primary'>Pay securely via PhonePe</span>
 										</div>
 									</div>
 								</div>
@@ -329,7 +403,7 @@ export default function Checkout() {
 
 								<button
 									onClick={handlePayment}
-									disabled={loading || items.length === 0}
+									// disabled={loading || items.length === 0}
 									className='w-full py-5 bg-primary text-black font-bold rounded-full hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-lg shadow-primary/20 disabled:opacity-50'>
 									{loading ? (
 										<div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
