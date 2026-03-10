@@ -47,7 +47,7 @@ export default function Checkout() {
 		const price = item.cartProduct?.regularPrice || item.cartProduct?.price || 0;
 		return acc + price * item.selQty;
 	}, 0);
-	const shipping = 200.0;
+	const shipping = 0.0;
 	const total = subtotal + shipping;
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
