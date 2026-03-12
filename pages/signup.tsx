@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { User, Mail, Lock, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateProfile } from '@/store/slices/authSlice';
 import { AppDispatch, RootState } from '@/store/store';
@@ -11,6 +11,7 @@ import Footer from '@/components/layout/Footer';
 export default function Signup() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const dispatch = useDispatch<AppDispatch>();
     const router = useRouter();
     const { user, status, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
@@ -30,6 +31,7 @@ export default function Signup() {
         const result = await dispatch(updateProfile({ 
             name, 
             email, 
+            password,
             contact: user.contact.toString() 
         }));
         
@@ -83,6 +85,21 @@ export default function Signup() {
                                     placeholder="Enter your email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-primary transition-colors"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">Password</label>
+                            <div className="relative">
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                <input 
+                                    type="password"
+                                    required
+                                    placeholder="Create a password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-primary transition-colors"
                                 />
                             </div>

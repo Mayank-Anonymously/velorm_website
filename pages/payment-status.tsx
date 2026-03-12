@@ -29,30 +29,15 @@ export default function PaymentStatus() {
                         body: JSON.stringify({ merchantTransactionId: id })
                     });
                     const data = await res.json();
+                    console.log('Verification response:', data);
                     
-                    if (data.response?.code === 'PAYMENT_SUCCESS') {
-                        // Retrieve temp order data and place final order
-                        const tempOrderData = localStorage.getItem('temp_order_data');
-                        if (tempOrderData) {
-                            const orderData = JSON.parse(tempOrderData);
-                            orderData.status = 'ORDERED';
-                            orderData.paymentId = id;
-                            
-                            const result = await dispatch(createOrder(orderData));
-                            if (createOrder.fulfilled.match(result)) {
-                                setStatus('success');
-                                setMessage('Payment successful! Your order has been placed.');
-                                localStorage.removeItem('temp_order_data');
-                            } else {
-                                throw new Error('Failed to create order despite payment success');
-                            }
-                        } else {
-                            setStatus('success');
-                            setMessage('Payment successful! (Order already processed)');
-                        }
+                    if (data.baseResponse?.status === 1 && (data.response?.status === 'COMPLETED' || data.response?.status === 'SUCCESS')) {
+                        setStatus('success');
+                        setMessage('Payment successful! Your order has been placed.');
+                        localStorage.removeItem('temp_order_data');
                     } else {
                         setStatus('failed');
-                        setMessage(data.response?.message || 'Payment failed. Please try again.');
+                        setMessage(data.baseResponse?.message || data.response?.message || 'Payment failed. Please try again.');
                     }
                 } catch (error) {
                     console.error('Verification error:', error);

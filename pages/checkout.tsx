@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/store/store';
 import { createOrder } from '@/store/slices/orderSlice';
-import { sendOtp, updateProfile } from '@/store/slices/authSlice';
+import { loginDirect, updateProfile } from '@/store/slices/authSlice';
 import { useRouter } from 'next/router';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -25,6 +25,7 @@ export default function Checkout() {
 		city: '',
 		postalCode: '',
 		landmark: '',
+		password: '',
 	});
 
 	const [loading, setLoading] = useState(false);
@@ -68,47 +69,40 @@ export default function Checkout() {
 		try {
 			let currentUserId = user?._id;
 
-			// 1. If not authenticated, create user first
+			// 1. If not authenticated, register user first
 			if (!isAuthenticated) {
-				console.log("Creating user for unauthenticated checkout...");
-				const otpResult = await dispatch(sendOtp({ contact: formData.contact }));
-				if (sendOtp.fulfilled.match(otpResult)) {
-					const newUser = otpResult.payload.response;
-					currentUserId = newUser._id;
+				console.log("Registering user during smooth checkout...");
+				const regResult = await dispatch(updateProfile({
+					name: `${formData.firstName} ${formData.lastName}`,
+					email: formData.email,
+					password: formData.password,
+					contact: formData.contact
+				}));
 
-					await dispatch(updateProfile({
-						name: `${formData.firstName} ${formData.lastName}`,
-						email: formData.email,
-						contact: formData.contact
-					}));
+				if (updateProfile.fulfilled.match(regResult)) {
+					const newUser = regResult.payload;
+					if (!newUser?._id) throw new Error("Registration failed: Missing user ID");
+					currentUserId = newUser._id;
+					console.log("Registration successful, proceeding to payment...");
 				} else {
-					throw new Error("Failed to create user account");
+					throw new Error(regResult.error.message || "Failed to create account. Please check your details.");
 				}
 			}
 
 			if (paymentMethod === 'PHONEPE') {
 				console.log("Initiating PhonePe payment...");
-				// Use relative path or local URL for testing
 				const apiBase = typeof window !== 'undefined' && window.location.hostname === 'localhost' 
 					? 'http://localhost:9291' 
 					: 'https://api.velorm.com';
 				
-				const res = await fetch(`${apiBase}/api/v1/payment/initiate`, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						amount: total,
-						contact: formData.contact,
-						userId: currentUserId
-					})
-				});
-				const data = await res.json();
-				console.log("PhonePe Response:", data);
-				if (data.baseResponse.status === 1) {
-					localStorage.setItem('temp_order_data', JSON.stringify({
+				const orderPayload = {
+					order_data: {
 						orderPlace: 'Website',
 						product: items.map((item) => ({
 							id: item.cartProduct._id,
+							name: item.cartProduct.name,
+							image: [item.cartProduct.image],
+							price: item.cartProduct.regularPrice || item.cartProduct.price,
 							selQty: item.selQty,
 						})),
 						user: {
@@ -127,18 +121,30 @@ export default function Checkout() {
 								coordinates: [0, 0],
 							},
 						},
-						status: 'PENDING',
+						status: 'ORDERED',
 						amount: total,
 						deliverySchedule: 'Standard',
 						deliveryDate: new Date().toISOString(),
 						paymentOption: 'PHONEPE',
+						walletDeductedAmount: 0,
 						deliveryType: 'Standard',
-						type: 'web',
-					}));
-					window.location.href = data.response.url;
+					}
+				};
+
+				const res = await fetch(`${apiBase}/api/v1/order/create-new-order/${currentUserId}`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(orderPayload)
+				});
+				const data = await res.json();
+				console.log("PhonePe Order Response:", data);
+				
+				if (data.baseResponse?.status === 1 && data.response?.redirectUrl) {
+					// Redirect user to PhonePe checkout page
+					window.location.href = data.response.redirectUrl;
 					return;
 				} else {
-					throw new Error(data.baseResponse.message);
+					throw new Error(data.baseResponse?.message || "Payment initiation failed");
 				}
 			}
 
@@ -263,6 +269,22 @@ export default function Checkout() {
 											/>
 										</div>
 									</div>
+									{!isAuthenticated && (
+										<div className="space-y-2 sm:col-span-2">
+											<label className="text-[10px] font-bold uppercase tracking-widest text-gray-500 ml-1">Create Password</label>
+											<div className="relative">
+												<Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+												<input
+													name='password'
+													type='password'
+													placeholder='Min 6 characters'
+													value={formData.password}
+													onChange={handleInputChange}
+													className='w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-sm focus:border-primary focus:outline-none text-white transition-colors'
+												/>
+											</div>
+										</div>
+									)}
 									<div className="space-y-2 sm:col-span-2">
 										<label className="text-[10px] font-bold uppercase tracking-widest text-gray-500 ml-1">Address</label>
 										<div className="relative">

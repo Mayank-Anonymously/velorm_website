@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 
-const API_URL = 'https://api.velorm.com/api/v1/login';
+const API_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+    ? 'http://localhost:9291/api/v1/login'
+    : 'https://api.velorm.com/api/v1/login';
 
 interface User {
     _id: string;
@@ -44,53 +46,56 @@ const initialState: AuthState = {
 };
 
 // Async Thunks
-export const sendOtp = createAsyncThunk(
-    'auth/sendOtp',
-    async ({ contact }: { contact: string }) => {
-        const response = await fetch(`${API_URL}/otp-by-contact`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contact }),
-        });
-        const data = await response.json();
-        return data;
-    }
-);
-
-export const verifyOtp = createAsyncThunk(
-    'auth/verifyOtp',
-    async ({ contact, otp }: { contact: string; otp: string }) => {
+export const loginDirect = createAsyncThunk(
+    'auth/loginDirect',
+    async ({ email, password }: { email: string; password: string }) => {
         const response = await fetch(`${API_URL}/authenticate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contact, otp }),
+            body: JSON.stringify({ email, password }),
         });
         const data = await response.json();
+
         if (data.baseResponse?.status === 1) {
-            // In this specific backend, 'details' contains the user object.
-            // There's no explicit JWT token returned in this mock-like response,
-            // so we'll use the user ID as a token placeholder if none exists.
             const user = data.details || data.response;
+            if (!user) throw new Error('User data not found in response');
             const token = user._id;
             localStorage.setItem('velorm_user', JSON.stringify(user));
             localStorage.setItem('velorm_token', token);
             return { user, token };
         }
-        throw new Error(data.baseResponse?.message || 'Invalid OTP');
+        throw new Error(data.baseResponse?.message || 'Login failed');
     }
 );
 
 export const updateProfile = createAsyncThunk(
     'auth/updateProfile',
-    async (userData: { name: string; email: string; contact: string }) => {
+    async (userData: { name: string; email: string; password?: string; contact: string }) => {
+        console.log("updateProfile - Sending Data:", userData);
         const response = await fetch(`${API_URL}/add-user-details`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(userData),
         });
-        const data = await response.json();
+
+        const responseText = await response.text();
+        console.log("updateProfile - Raw Response Text:", responseText);
+
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch (e) {
+            console.error("updateProfile - Failed to parse JSON response", responseText);
+            throw new Error('Registration failed: Invalid server response');
+        }
+
+        console.log("updateProfile - Parsed Data:", data);
         if (data.baseResponse?.status === 1) {
             const user = data.response;
+            if (!user) {
+                console.error("updateProfile - Error: User object missing in response", data);
+                throw new Error('Registration failed: User details not returned');
+            }
             localStorage.setItem('velorm_user', JSON.stringify(user));
             return user;
         }
@@ -114,22 +119,30 @@ const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(verifyOtp.pending, (state) => {
+            .addCase(loginDirect.pending, (state) => {
                 state.status = 'loading';
             })
-            .addCase(verifyOtp.fulfilled, (state, action) => {
+            .addCase(loginDirect.fulfilled, (state, action) => {
                 state.status = 'succeeded';
                 state.user = action.payload.user;
                 state.token = action.payload.token;
                 state.isAuthenticated = true;
                 state.error = null;
             })
-            .addCase(verifyOtp.rejected, (state, action) => {
+            .addCase(loginDirect.rejected, (state, action) => {
                 state.status = 'failed';
-                state.error = action.error.message || 'Verification failed';
+                state.error = action.error.message || 'Login failed';
             })
             .addCase(updateProfile.fulfilled, (state, action) => {
+                if (!action.payload) return;
+                state.status = 'succeeded';
                 state.user = action.payload;
+                state.token = action.payload?._id || null;
+                state.isAuthenticated = true;
+                state.error = null;
+                if (typeof window !== 'undefined' && action.payload?._id) {
+                    localStorage.setItem('velorm_token', action.payload._id);
+                }
             });
     },
 });
