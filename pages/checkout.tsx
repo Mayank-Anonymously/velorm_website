@@ -59,7 +59,6 @@ export default function Checkout() {
 	const [paymentMethod, setPaymentMethod] = useState<'COD' | 'PHONEPE'>('COD');
 
 	const handlePayment = async () => {
-		console.log("Handle Payment Clicked", { itemsCount: items.length, paymentMethod, loading });
 		if (items.length === 0) {
 			alert("Your bag is empty");
 			return;

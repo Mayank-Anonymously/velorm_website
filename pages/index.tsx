@@ -33,7 +33,7 @@ export default function Home() {
 		fetch(`${apiBase}/api/v1/product/get-all-products`)
 			.then((r) => r.json())
 			.then((d) => {
-				const products = (d.response || []).slice(0, 5);
+				const products = (d.response || [])
 				setFeaturedProducts(products);
 			})
 			.catch(console.error);
